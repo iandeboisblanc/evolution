@@ -219,7 +219,15 @@ function updateBodyPartPositions() {
       var bodyPart = eve.bodyParts[j];
       bodyPart.pos.x += bodyPart.vel.x;
       //check if offscreen
+      if(bodyPart.pos.x <= bodyPart.mass || bodyPart.pos.x >= settings.width - bodyPart.mass) {
+        bodyPart.pos.x = limitPositions(bodyPart.pos.x, 1, bodyPart.mass)[0];
+        bodyPart.vel.x = -1 * bodyPart.vel.x;
+      }
       bodyPart.pos.y += bodyPart.vel.y;
+      if(bodyPart.pos.y <= bodyPart.mass || bodyPart.pos.y >= settings.height - bodyPart.mass) {
+        bodyPart.pos.y = limitPositions(1, bodyPart.pos.y, bodyPart.mass)[1];
+        bodyPart.vel.y = -1 * bodyPart.vel.y;
+      }
       //check if offscreen
       d3.select('#' + eve.id + 'b' + j)
         .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y);
