@@ -160,7 +160,6 @@ function animate() {
   setInterval( function() {
     applyLimbForces();
     updateBodyPartPositions();
-    updateLimbPositions();
   }, settings.stepTime);
 }
 
@@ -197,10 +196,14 @@ function applyLimbForces() {
       if (xPosDiff >= 0) {
         force *= -1;
       }
+      var movementFactor = 1;
+      if(limb.growing) {
+        movementFactor = 0.9;
+      }
       var dVx0 = force / b0.mass * cos(theta);
       var dVy0 = force / b0.mass * sin(theta);
-      var dVx1 = -force / b1.mass * cos(theta);
-      var dVy1 = -force / b1.mass * sin(theta);
+      var dVx1 = -force / b1.mass * cos(theta) * movementFactor;
+      var dVy1 = -force / b1.mass * sin(theta) * movementFactor;
       b0.vel.x = min( 20, max( b0.vel.x + dVx0, -20 ));
       b0.vel.y = min( 20, max( b0.vel.y + dVy0, -20 ));
       b1.vel.x = min( 20, max( b1.vel.x + dVx1, -20 ));
@@ -219,12 +222,16 @@ function updateBodyPartPositions() {
       bodyPart.pos.y += bodyPart.vel.y;
       //check if offscreen
       d3.select('#' + eve.id + 'b' + j)
-        .attr('cx', bodyPart.pos.x)
-        .attr('cy', bodyPart.pos.y)
+        .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y);
+      d3.select('#' + eve.id + 'l' + j)
+        .attr('x1', bodyPart.pos.x).attr('y1', bodyPart.pos.y);
+      if(j > 0) {
+        d3.select('#' + eve.id + 'l' + (j-1))
+          .attr('x2', bodyPart.pos.x).attr('y2', bodyPart.pos.y);
+      }
     }
   }
 }
-
 
 
 
