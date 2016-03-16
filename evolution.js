@@ -1,6 +1,6 @@
 //settings
 var settings = {
-  stepTime: 5,
+  stepTime: 50,
   eveCount: 20,
   width: window.innerWidth - 40,
   height: window.innerHeight - 40,
@@ -28,6 +28,15 @@ var limitPositions = function(x,y,r) {
   return [x,y];
 }
 
+//INIT:
+
+createBoard();
+populateData();
+generateEves();
+setTimeout(animate, 1000);
+
+//FUNCTIONS:
+
 function drawEve(data) {
   //draws Eve with data
   //return element
@@ -36,37 +45,33 @@ function drawEve(data) {
 
   d3.select(eve)
     .attr('class','eve')
+    .attr('id', data.id)
     .append('circle')
-    .attr('cx',data.startPos.x).attr('cy',data.startPos.y)
-    .attr('r',data.bodyParts[0].mass);
-  
-  var yPos = data.startPos.y;
-  var currentXPos = data.startPos.x;
-  var lastXPos = currentXPos;
+    .attr('cx', data.bodyParts[0].pos.x).attr('cy', data.bodyParts[0].pos.y)
+    .attr('r', data.bodyParts[0].mass)
+    .attr('id', data.id + 'b0');
   //if distance between starting x and wall are less than 50, 
     //draw it on oneside, 
   // else, 
     //draw it on the otehr
   for(var i = 0; i < data.limbs.length; i++) {
-    lastXPos = currentXPos;
-    currentXPos += data.limbs[i].length;
     //tack on body part
+    var b0 = data.bodyParts[i];
+    var b1 = data.bodyParts[i + 1];
     d3.select(eve)
       .append('line')
-      .attr('x1', lastXPos).attr('y1', yPos)
-      .attr('x2', currentXPos).attr('y2', yPos);
+      .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
+      .attr('x2', b1.pos.x).attr('y2', b1.pos.y)
+      .attr('id', data.id + 'l' + i);
     d3.select(eve)
       .append('circle')
-      .attr('cx', currentXPos).attr('cy', yPos)
-      .attr('r', data.bodyParts[i+1].mass);
+      .attr('cx', b1.pos.x).attr('cy', b1.pos.y)
+      .attr('r', b1.mass)
+      .attr('id', data.id + 'b' + (i + 1));
   }
   return eve;
 };
 
-//INIT:
-createBoard();
-populateData();
-generateEves();
 
 function createBoard() {
   d3.select('body').selectAll('svg')
@@ -80,39 +85,57 @@ function createBoard() {
 
 function createEveData(proto) {
   var data = {};
-  data.id = floor(random() * 10000000000);
+  data.id = 'eve' + floor(random() * 10000000000);
+
   if(proto) {
     //build off existing
     //select a quality
     //if relevant, select a subquality
   } else {
     data.bodyParts = [];
-    // var bodyPartCount = floor(random() * 4) + 1;
-    var bodyPartCount = 3;
-    for(var i = 0; i < bodyPartCount; i++) {
-      var bodyPart = {};
-      bodyPart.mass = floor(random() * 10) + 3; 
-      //color
-      //spikes/plates if i'm into that
-      data.bodyParts.push(bodyPart);
-    }
-    //count of limbs? Can they be freely attached without two nodes?
     data.limbs = [];
+    var firstPart = {
+      mass: floor(random() * 10) + 3,
+      pos: {x:floor(random() * settings.width), y:floor(random() * settings.height)},
+      vel: {x:0, y:0}
+    }
+    data.bodyParts.push(firstPart);
+    //count of limbs? Can they be freely attached without two nodes?
+
+    var bodyPartCount = floor(random() * 4) + 2;
+    var yPos = firstPart.pos.y;
+    var currentXPos = firstPart.pos.x;
     for(var i = 1; i < bodyPartCount; i++) {
-      var limb = {};
-      limb.connections = [i-1, i];
-      limb.length = floor(random() * 5) + 2 + data.bodyParts[i-1].mass + data.bodyParts[i].mass;
-      //angle of connection?
-      //phase of movement?
-      //magnitude of movement? (springiness)
-      //speed of movement?
-      //color?
+      
+      var limb = {
+        connections: [i-1, i],
+        currentLength: floor(random() * 20) + 10,
+        growing: false,
+        //angle of connection?
+        //phase of movement?
+        //magnitude of movement? (springiness)
+        //speed of movement?
+        //color?
+      };
+      limb.initialLength = limb.currentLength;
+      limb.maxLength = limb.initialLength + floor(random() * 5);
+
+      currentXPos = currentXPos + limb.initialLength;
+      
+      var bodyPart = {
+        mass: floor(random() * 10) + 3,
+        pos: {x:currentXPos, y:yPos},
+        vel: {x:0, y:0}
+        //color
+        //spikes/plates if i'm into that
+      }
+
       data.limbs.push(limb);
+      data.bodyParts.push(bodyPart);
     }
     //speed?
     //color?
     //total mass?
-    data.startPos = {x:floor(random() * settings.width), y:floor(random() * settings.height)};
   }
   return data;
 }
@@ -133,8 +156,74 @@ function populateData() {
 }
 
 
+function animate() {
+  setInterval( function() {
+    applyLimbForces();
+    updateBodyPartPositions();
+    updateLimbPositions();
+  }, settings.stepTime);
+}
 
+function applyLimbForces() {
+  for(var i = 0; i < Eves.length; i++) {
+    var eve = Eves[i];
+    for(var j = 0; j < eve.limbs.length; j++) {
+      var limb = eve.limbs[j];
+      var b0 = eve.bodyParts[limb.connections[0]];
+      var b1 = eve.bodyParts[limb.connections[1]];
+      var displacement, force;
+      limb.currentLength = findDistance(b0.pos, b1.pos)
+      if(limb.growing) {
+        displacement = limb.maxLength - limb.currentLength;
+        force = displacement * 0.1;
+        if(limb.currentLength >= limb.maxLength) {
+          limb.growing = false;
+        }
+      } else {
+        displacement = limb.initialLength - limb.currentLength;
+        force = displacement * 0.1;
+        if(limb.currentLength <= limb.initialLength) {
+          limb.growing = true;
+        }
+      }
+      var xPosDiff = b1.pos.x - b0.pos.x;
+      var yPosDiff = b1.pos.y - b0.pos.y;
+      if(xPosDiff === 0) {
+        var theta = Math.PI;
+      }
+      else {
+        var theta = atan(yPosDiff / xPosDiff);
+      }
+      if (xPosDiff >= 0) {
+        force *= -1;
+      }
+      var dVx0 = force / b0.mass * cos(theta);
+      var dVy0 = force / b0.mass * sin(theta);
+      var dVx1 = -force / b1.mass * cos(theta);
+      var dVy1 = -force / b1.mass * sin(theta);
+      b0.vel.x = min( 20, max( b0.vel.x + dVx0, -20 ));
+      b0.vel.y = min( 20, max( b0.vel.y + dVy0, -20 ));
+      b1.vel.x = min( 20, max( b1.vel.x + dVx1, -20 ));
+      b1.vel.y = min( 20, max( b1.vel.y + dVy1, -20 ));
+    }
+  }
+}
 
+function updateBodyPartPositions() {
+  for(var i = 0; i < Eves.length; i++) {
+    var eve = Eves[i];
+    for(var j = 0; j < eve.bodyParts.length; j++) {
+      var bodyPart = eve.bodyParts[j];
+      bodyPart.pos.x += bodyPart.vel.x;
+      //check if offscreen
+      bodyPart.pos.y += bodyPart.vel.y;
+      //check if offscreen
+      d3.select('#' + eve.id + 'b' + j)
+        .attr('cx', bodyPart.pos.x)
+        .attr('cy', bodyPart.pos.y)
+    }
+  }
+}
 
 
 
