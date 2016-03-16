@@ -103,14 +103,15 @@ function createEveData(proto) {
     //count of limbs? Can they be freely attached without two nodes?
 
     var bodyPartCount = floor(random() * 4) + 2;
-    var yPos = firstPart.pos.y;
+    var currentYPos = firstPart.pos.y;
     var currentXPos = firstPart.pos.x;
     for(var i = 1; i < bodyPartCount; i++) {
       
       var limb = {
         connections: [i-1, i],
-        currentLength: floor(random() * 20) + 10,
+        currentLength: floor(random() * 15) + 3,
         growing: false,
+        angle: random() * 2 * Math.PI
         //angle of connection?
         //phase of movement?
         //magnitude of movement? (springiness)
@@ -118,18 +119,18 @@ function createEveData(proto) {
         //color?
       };
       limb.initialLength = limb.currentLength;
-      limb.maxLength = limb.initialLength + floor(random() * 5);
+      limb.maxLength = limb.initialLength + floor(random() * 3);
 
-      currentXPos = currentXPos + limb.initialLength;
+      currentXPos = currentXPos + limb.initialLength * cos(limb.angle);
+      currentYPos = currentYPos + limb.initialLength * sin(limb.angle);
       
       var bodyPart = {
         mass: floor(random() * 10) + 3,
-        pos: {x:currentXPos, y:yPos},
+        pos: {x:currentXPos, y:currentYPos},
         vel: {x:0, y:0}
         //color
         //spikes/plates if i'm into that
       }
-
       data.limbs.push(limb);
       data.bodyParts.push(bodyPart);
     }
@@ -155,7 +156,6 @@ function populateData() {
   }
 }
 
-
 function animate() {
   setInterval( function() {
     applyLimbForces();
@@ -164,6 +164,7 @@ function animate() {
 }
 
 function applyLimbForces() {
+  debugger;
   for(var i = 0; i < Eves.length; i++) {
     var eve = Eves[i];
     for(var j = 0; j < eve.limbs.length; j++) {
