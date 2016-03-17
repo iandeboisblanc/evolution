@@ -34,13 +34,14 @@ createBoard();
 populateData();
 generateEves();
 setTimeout(animate, 1000);
+setInterval(collectStats, 5000);
+setInterval(killEves, 10000);
 
 //FUNCTIONS:
 
 function drawEve(data) {
   //draws Eve with data
   //return element
-  console.log(data);
   var eve = document.createElementNS('http://www.w3.org/2000/svg','g');
 
   d3.select(eve)
@@ -86,7 +87,12 @@ function createBoard() {
 function createEveData(proto) {
   var data = {};
   data.id = 'eve' + floor(random() * 10000000000);
-
+  data.stats = {
+    distanceTraveled: 0,
+    timeSinceBirth: 0,
+    generation: 1,
+    ancestors: []
+  }
   if(proto) {
     //build off existing
     //select a quality
@@ -110,7 +116,7 @@ function createEveData(proto) {
       var limb = {
         connections: [i-1, i],
         currentLength: floor(random() * 15) + 3,
-        growing: false,
+        growing: true,
         angle: random() * 2 * Math.PI
         //angle of connection?
         //phase of movement?
@@ -133,7 +139,9 @@ function createEveData(proto) {
       }
       data.limbs.push(limb);
       data.bodyParts.push(bodyPart);
+
     }
+    data.stats.currentPos = JSON.parse(JSON.stringify(data.bodyParts[0].pos));
     //speed?
     //color?
     //total mass?
@@ -164,7 +172,6 @@ function animate() {
 }
 
 function applyLimbForces() {
-  debugger;
   for(var i = 0; i < Eves.length; i++) {
     var eve = Eves[i];
     for(var j = 0; j < eve.limbs.length; j++) {
@@ -175,13 +182,13 @@ function applyLimbForces() {
       limb.currentLength = findDistance(b0.pos, b1.pos)
       if(limb.growing) {
         displacement = limb.maxLength - limb.currentLength;
-        force = displacement * 0.1;
+        force = displacement * 0.1 - 1;
         if(limb.currentLength >= limb.maxLength) {
           limb.growing = false;
         }
       } else {
         displacement = limb.initialLength - limb.currentLength;
-        force = displacement * 0.1;
+        force = displacement * 0.1 + 1;
         if(limb.currentLength <= limb.initialLength) {
           limb.growing = true;
         }
@@ -199,7 +206,7 @@ function applyLimbForces() {
       }
       var movementFactor = 1;
       if(limb.growing) {
-        movementFactor = 0.9;
+        movementFactor = 0.5;
       }
       var dVx0 = force / b0.mass * cos(theta);
       var dVy0 = force / b0.mass * sin(theta);
@@ -242,7 +249,49 @@ function updateBodyPartPositions() {
   }
 }
 
+function collectStats() {
+  for(var i = 0; i < Eves.length; i++) {
+    var eve = Eves[i];
+    var xPos = 0;
+    var yPos = 0;
+    for(var j = 0; j < eve.bodyParts.length; j++) {
+      xPos += eve.bodyParts[j].pos.x;
+      yPos += eve.bodyParts[j].pos.y;
+    }
+    var pos = {
+      x:xPos / eve.bodyParts.length,
+      y:yPos / eve.bodyParts.length,
+    }
 
+    var distance = findDistance(pos, eve.stats.currentPos);
+    eve.stats.distanceTraveled += distance;
+    eve.stats.timeSinceBirth += 1;
+    console.log(eve.id, 'avg speed is', eve.stats.distanceTraveled / eve.stats.timeSinceBirth);
+  }
+}
+
+function killEves() {
+  var smallest = Eves.reduce(function(smallest, eve) {
+    var eveSpeed = eve.stats.distanceTraveled / eve.stats.timeSinceBirth;
+    var smallestSpeed = smallest.stats.distanceTraveled / smallest.stats.timeSinceBirth;
+    return eveSpeed < smallestSpeed ? eve : smallest;
+  });
+  var slowest = 0;
+  for(var i = 0; i < Eves.length; i++) {
+    var eveSpeed = Eves[i].stats.distanceTraveled / Eves[i].stats.timeSinceBirth;
+    var smallestSpeed = Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.timeSinceBirth;
+    if(eveSpeed < smallestSpeed) {
+      slowest = i;
+    }
+  }
+
+  Eves.splice(slowest,1);
+
+  d3.select('.board').selectAll('.eve')
+    .data(Eves, function(d) { return d.id })
+    .exit()
+    .remove();
+}
 
 
 
