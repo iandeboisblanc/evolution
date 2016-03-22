@@ -34,7 +34,7 @@ createBoard();
 populateData();
 generateEves();
 setTimeout(animate, 1000);
-setInterval(collectStats, 5000);
+setInterval(collectStats, 10000);
 setInterval(killEves, 10000);
 
 //FUNCTIONS:
@@ -46,29 +46,30 @@ function drawEve(data) {
 
   d3.select(eve)
     .attr('class','eve')
-    .attr('id', data.id)
-    .append('circle')
-    .attr('cx', data.bodyParts[0].pos.x).attr('cy', data.bodyParts[0].pos.y)
-    .attr('r', data.bodyParts[0].mass)
-    .attr('id', data.id + 'b0');
+    .attr('id', data.id);
   //if distance between starting x and wall are less than 50, 
     //draw it on oneside, 
   // else, 
-    //draw it on the otehr
+    //draw it on the other
+
   for(var i = 0; i < data.limbs.length; i++) {
     //tack on body part
-    var b0 = data.bodyParts[i];
-    var b1 = data.bodyParts[i + 1];
+    console.log(data.limbs[i]);
+    var b0 = data.bodyParts[data.limbs[i].connections[0]];
+    var b1 = data.bodyParts[data.limbs[i].connections[1]];
     d3.select(eve)
       .append('line')
       .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
       .attr('x2', b1.pos.x).attr('y2', b1.pos.y)
       .attr('id', data.id + 'l' + i);
+  }
+  for(var i = 0; i < data.bodyParts.length; i ++) {
+    var bodyPart = data.bodyParts[i];
     d3.select(eve)
       .append('circle')
-      .attr('cx', b1.pos.x).attr('cy', b1.pos.y)
-      .attr('r', b1.mass)
-      .attr('id', data.id + 'b' + (i + 1));
+      .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y)
+      .attr('r', bodyPart.mass)
+      .attr('id', data.id + 'b' + (i));
   }
   return eve;
 };
@@ -98,8 +99,10 @@ function createEveData(proto) {
     //select a quality
     //if relevant, select a subquality
   } else {
+    //make body parts, setting distance a random (small) limbish length apart
+    //generate the limbs from the distances and random connections
     data.bodyParts = [];
-    data.limbs = [];
+
     var firstPart = {
       mass: floor(random() * 10) + 3,
       pos: {x:floor(random() * settings.width), y:floor(random() * settings.height)},
@@ -108,28 +111,18 @@ function createEveData(proto) {
     data.bodyParts.push(firstPart);
     //count of limbs? Can they be freely attached without two nodes?
 
-    var bodyPartCount = floor(random() * 4) + 2;
-    var currentYPos = firstPart.pos.y;
+    var bodyPartCount = floor(random() * 5) + 2;
     var currentXPos = firstPart.pos.x;
+    var currentYPos = firstPart.pos.y;
+    var xSum = currentXPos;
+    var ySum = currentYPos;
     for(var i = 1; i < bodyPartCount; i++) {
-      
-      var limb = {
-        connections: [i-1, i],
-        currentLength: floor(random() * 15) + 3,
-        growing: true,
-        angle: random() * 2 * Math.PI
-        //angle of connection?
-        //phase of movement?
-        //magnitude of movement? (springiness)
-        //speed of movement?
-        //color?
-      };
-      limb.initialLength = limb.currentLength;
-      limb.maxLength = limb.initialLength + floor(random() * 3);
-
-      currentXPos = currentXPos + limb.initialLength * cos(limb.angle);
-      currentYPos = currentYPos + limb.initialLength * sin(limb.angle);
-      
+      var distance = floor(random() * 10) + 2;
+      var angle = random() * 2 * Math.PI;
+      currentXPos = currentXPos + distance * cos(angle);
+      currentYPos = currentYPos + distance * sin(angle);
+      xSum += currentXPos;
+      ySum += currentYPos;
       var bodyPart = {
         mass: floor(random() * 10) + 3,
         pos: {x:currentXPos, y:currentYPos},
@@ -137,16 +130,78 @@ function createEveData(proto) {
         //color
         //spikes/plates if i'm into that
       }
-      data.limbs.push(limb);
       data.bodyParts.push(bodyPart);
-
     }
-    data.stats.currentPos = JSON.parse(JSON.stringify(data.bodyParts[0].pos));
-    //speed?
-    //color?
-    //total mass?
+
+    data.stats.currentPos = {x: xSum / data.bodyParts.length, y: ySum / data.bodyParts.length};
+
+    data.limbs = [];
+
+    var possibleConnections = [];
+    for(var i = 0; i < data.bodyParts.length; i++) {
+      for(var j = i + 1; j < data.bodyParts.length; j++) {
+        possibleConnections.push([i,j]);
+      }
+    }
+    var allConnected = false;
+    while(!allConnected && possibleConnections.length) {
+      var randomIndex = Math.floor(Math.random() * possibleConnections.length);
+      var randomConnection = possibleConnections.splice(randomIndex,1)[0];
+      var b0 = randomConnection[0];
+      var b1 = randomConnection[1];
+      var length = findDistance(data.bodyParts[b0].pos,data.bodyParts[b1].pos);
+      console.log('length:',length);
+      var limb = {
+        connections: randomConnection,
+        currentLength: length,
+        growing: true,
+        initialLength: length,
+        maxLength: length + floor(random() * 3),
+        //phase of movement?
+        //speed of movement?
+        //color?
+      };
+      data.limbs.push(limb);
+      var connections = data.limbs.map(function(limb) {
+        return limb.connections;
+      });
+      allConnected = checkIfAllIncluded(connections, data.bodyParts.length) && checkIfConnected(connections);
+    }
+    //add a random few more limbs
   }
   return data;
+}
+
+function checkIfAllIncluded(connections, partCount) {
+  var nodes = {};
+  connections.forEach(function(conn) {
+    nodes[conn[0]] = true;
+    nodes[conn[1]] = true;
+  });
+  return Object.keys(nodes).length === partCount;
+}
+
+function checkIfConnected(array) {
+  var nodes = {};
+  var setInc = 1;
+  for(var i = 0; i < array.length; i++) {
+    var conns = array[i];
+    var leastSet = min(nodes[conns[0]] || Infinity, nodes[conns[1]] || Infinity);
+    if(leastSet < Infinity) {
+      nodes[conns[0]] = leastSet;
+      nodes[conns[1]] = leastSet;
+    } else {
+      nodes[conns[0]] = setInc;
+      nodes[conns[1]] = setInc;
+      setInc++;
+    }
+  }
+  for(var set in nodes) {
+    if(nodes[set] !== 1) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function generateEves() {
@@ -182,13 +237,13 @@ function applyLimbForces() {
       limb.currentLength = findDistance(b0.pos, b1.pos)
       if(limb.growing) {
         displacement = limb.maxLength - limb.currentLength;
-        force = displacement * 0.1 - 1;
+        force = displacement * 0.1 - 1.5;
         if(limb.currentLength >= limb.maxLength) {
           limb.growing = false;
         }
       } else {
         displacement = limb.initialLength - limb.currentLength;
-        force = displacement * 0.1 + 1;
+        force = displacement * 0.1 + 1.5;
         if(limb.currentLength <= limb.initialLength) {
           limb.growing = true;
         }
@@ -239,12 +294,13 @@ function updateBodyPartPositions() {
       //check if offscreen
       d3.select('#' + eve.id + 'b' + j)
         .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y);
-      d3.select('#' + eve.id + 'l' + j)
-        .attr('x1', bodyPart.pos.x).attr('y1', bodyPart.pos.y);
-      if(j > 0) {
-        d3.select('#' + eve.id + 'l' + (j-1))
-          .attr('x2', bodyPart.pos.x).attr('y2', bodyPart.pos.y);
-      }
+    }
+    for(var k = 0; k < eve.limbs.length; k++) {
+      var b0 = eve.bodyParts[eve.limbs[k].connections[0]];
+      var b1 = eve.bodyParts[eve.limbs[k].connections[1]];
+      d3.select('#' + eve.id + 'l' + k)
+        .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
+        .attr('x2', b1.pos.x).attr('y2', b1.pos.y);
     }
   }
 }
