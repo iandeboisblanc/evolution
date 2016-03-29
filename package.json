@@ -1,0 +1,24 @@
+{
+  "name": "evolution",
+  "version": "1.0.0",
+  "description": "",
+  "main": "evolution.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iandeboisblanc/evolution.git"
+  },
+  "author": "Ian deBoisblanc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iandeboisblanc/evolution/issues"
+  },
+  "homepage": "https://github.com/iandeboisblanc/evolution#readme",
+  "dependencies": {
+    "express": "^4.13.4",
+    "nodemon": "^1.9.1"
+  }
+}

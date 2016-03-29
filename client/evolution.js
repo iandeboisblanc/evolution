@@ -27,6 +27,13 @@ var limitPositions = function(x,y,r) {
   y = max(r, min(y, (settings.height - r)));
   return [x,y];
 }
+var chooseOne = function(args) {
+  args = Array.prototype.slice.call(arguments);
+  if(args.length === 1 && typeof Array.isArray(args[0])) {
+    return args[0][floor(random() * args[0].length)]
+  }
+  return args[floor(random() * args.length)];
+}
 
 //INIT:
 
@@ -35,7 +42,11 @@ populateData();
 generateEves();
 setTimeout(animate, 1000);
 setInterval(collectStats, 10000);
-setInterval(killEves, 10000);
+setInterval(function() {
+  killEves();
+  Eves.push(deriveEveData(chooseOne(Eves)));
+  generateEves();
+}, 10000);
 
 //FUNCTIONS:
 
@@ -54,7 +65,6 @@ function drawEve(data) {
 
   for(var i = 0; i < data.limbs.length; i++) {
     //tack on body part
-    console.log(data.limbs[i]);
     var b0 = data.bodyParts[data.limbs[i].connections[0]];
     var b1 = data.bodyParts[data.limbs[i].connections[1]];
     d3.select(eve)
@@ -85,7 +95,7 @@ function createBoard() {
     .attr('height', settings.height);
 }
 
-function createEveData(proto) {
+function createEveData() {
   var data = {};
   data.id = 'eve' + floor(random() * 10000000000);
   data.stats = {
@@ -94,82 +104,193 @@ function createEveData(proto) {
     generation: 1,
     ancestors: []
   }
-  if(proto) {
-    //build off existing
-    //select a quality
-    //if relevant, select a subquality
-  } else {
-    //make body parts, setting distance a random (small) limbish length apart
-    //generate the limbs from the distances and random connections
-    data.bodyParts = [];
+  data.bodyParts = [];
 
-    var firstPart = {
-      mass: floor(random() * 10) + 3,
-      pos: {x:floor(random() * settings.width), y:floor(random() * settings.height)},
-      vel: {x:0, y:0}
-    }
-    data.bodyParts.push(firstPart);
-    //count of limbs? Can they be freely attached without two nodes?
-
-    var bodyPartCount = floor(random() * 5) + 2;
-    var currentXPos = firstPart.pos.x;
-    var currentYPos = firstPart.pos.y;
-    var xSum = currentXPos;
-    var ySum = currentYPos;
-    for(var i = 1; i < bodyPartCount; i++) {
-      var distance = floor(random() * 10) + 2;
-      var angle = random() * 2 * Math.PI;
-      currentXPos = currentXPos + distance * cos(angle);
-      currentYPos = currentYPos + distance * sin(angle);
-      xSum += currentXPos;
-      ySum += currentYPos;
-      var bodyPart = {
-        mass: floor(random() * 10) + 3,
-        pos: {x:currentXPos, y:currentYPos},
-        vel: {x:0, y:0}
-        //color
-        //spikes/plates if i'm into that
-      }
-      data.bodyParts.push(bodyPart);
-    }
-
-    data.stats.currentPos = {x: xSum / data.bodyParts.length, y: ySum / data.bodyParts.length};
-
-    data.limbs = [];
-
-    var possibleConnections = [];
-    for(var i = 0; i < data.bodyParts.length; i++) {
-      for(var j = i + 1; j < data.bodyParts.length; j++) {
-        possibleConnections.push([i,j]);
-      }
-    }
-    var allConnected = false;
-    while(!allConnected && possibleConnections.length) {
-      var randomIndex = Math.floor(Math.random() * possibleConnections.length);
-      var randomConnection = possibleConnections.splice(randomIndex,1)[0];
-      var b0 = randomConnection[0];
-      var b1 = randomConnection[1];
-      var length = findDistance(data.bodyParts[b0].pos,data.bodyParts[b1].pos);
-      console.log('length:',length);
-      var limb = {
-        connections: randomConnection,
-        currentLength: length,
-        growing: true,
-        initialLength: length,
-        maxLength: length + floor(random() * 3),
-        //phase of movement?
-        //speed of movement?
-        //color?
-      };
-      data.limbs.push(limb);
-      var connections = data.limbs.map(function(limb) {
-        return limb.connections;
-      });
-      allConnected = checkIfAllIncluded(connections, data.bodyParts.length) && checkIfConnected(connections);
-    }
-    //add a random few more limbs
+  var firstPart = {
+    mass: floor(random() * 10) + 3,
+    pos: {x:floor(random() * settings.width), y:floor(random() * settings.height)},
+    initialRelativePos: {x:0, y:0},
+    vel: {x:0, y:0}
   }
-  return data;
+  data.bodyParts.push(firstPart);
+  //count of limbs? Can they be freely attached without two nodes?
+
+  var bodyPartCount = floor(random() * 5) + 2;
+  var currentXPos = firstPart.pos.x;
+  var currentYPos = firstPart.pos.y;
+  var xSum = currentXPos;
+  var ySum = currentYPos;
+  for(var i = 1; i < bodyPartCount; i++) {
+    var distance = floor(random() * 10) + 2;
+    var angle = random() * 2 * Math.PI;
+    currentXPos = currentXPos + distance * cos(angle);
+    currentYPos = currentYPos + distance * sin(angle);
+    xSum += currentXPos;
+    ySum += currentYPos;
+    //store initial relative start/end points for making children
+    var bodyPart = {
+      mass: floor(random() * 10) + 3,
+      pos: {x:currentXPos, y:currentYPos},
+      initialRelativePos: {x:currentXPos - firstPart.pos.x, y:currentYPos - firstPart.pos.y},
+      vel: {x:0, y:0}
+      //color
+      //spikes/plates if i'm into that
+    }
+    data.bodyParts.push(bodyPart);
+  }
+
+  data.stats.currentPos = {x: xSum / data.bodyParts.length, y: ySum / data.bodyParts.length};
+
+  data.limbs = [];
+
+  var possibleConnections = [];
+  for(var i = 0; i < data.bodyParts.length; i++) {
+    for(var j = i + 1; j < data.bodyParts.length; j++) {
+      possibleConnections.push([i,j]);
+    }
+  }
+  var allConnected = false;
+  while(!allConnected && possibleConnections.length) {
+    var randomIndex = Math.floor(Math.random() * possibleConnections.length);
+    var randomConnection = possibleConnections.splice(randomIndex,1)[0];
+    var b0 = randomConnection[0];
+    var b1 = randomConnection[1];
+    var length = findDistance(data.bodyParts[b0].pos, data.bodyParts[b1].pos);
+    var limb = {
+      connections: randomConnection,
+      currentLength: length,
+      growing: true,
+      initialLength: length,
+      maxLength: length + floor(random() * 3),
+      //phase of movement?
+      //speed of movement?
+      //color?
+    };
+    data.limbs.push(limb);
+    var connections = data.limbs.map(function(limb) {
+      return limb.connections;
+    });
+    allConnected = checkIfAllIncluded(connections, data.bodyParts.length) && checkIfConnected(connections);
+  }
+  var moreLimbs = floor(random() * possibleConnections.length);
+  for(var i = 0; i < moreLimbs; i++) {
+    var randomIndex = Math.floor(Math.random() * possibleConnections.length);
+    var randomConnection = possibleConnections.splice(randomIndex,1)[0];
+    var b0 = randomConnection[0];
+    var b1 = randomConnection[1];
+    var length = findDistance(data.bodyParts[b0].pos, data.bodyParts[b1].pos);
+    var limb = {
+      connections: randomConnection,
+      currentLength: length,
+      growing: true,
+      initialLength: length,
+      maxLength: length + floor(random() * 3),
+      //phase of movement?
+      //speed of movement?
+      //color?
+    };
+    data.limbs.push(limb);
+  }
+return data;
+}
+
+function deriveEveData(proto) {
+  var data = JSON.parse(JSON.stringify(proto));
+  data.id = 'eve' + floor(random() * 10000000000);
+  data.stats = {
+    distanceTraveled: 0,
+    timeSinceBirth: 0,
+    generation: proto.stats.generation + 1,
+    ancestors: proto.stats.ancestors.concat(proto)
+  };
+  
+  //reset to initial body positions?  
+
+  var bodyOrLimb = chooseOne('body','limb');
+  if(bodyOrLimb === 'body') {
+    var property = chooseOne('mass','count','position');
+    if(property === 'mass') {
+      var bodyPart = chooseOne(data.bodyParts);
+      var posOrNeg = chooseOne(-1,1);
+      bodyPart.mass = bodyPart.mass + posOrNeg * (floor(random() * 1 + 1));
+    }
+    if(property === 'count') {
+      var moreOrLess = chooseOne('more', 'less');
+      if(moreOrLess === 'more') {
+        var index = floor(random() * data.bodyParts.length);
+        var linkedPart = data.bodyParts[index];
+        var distance = floor(random() * 10) + 2;
+        var angle = random() * 2 * Math.PI;
+        var bodyPart = {
+          mass: floor(random() * 10) + 3,
+          pos: {
+            x:linkedPart.pos.x + distance * cos(angle), 
+            y:linkedPart.pos.y + distance * sin(angle)
+          },
+          initialRelativePos: {
+            x:linkedPart.pos.x + distance * cos(angle), 
+            y:linkedPart.pos.x + distance * cos(angle),
+          },
+          vel: {x:0, y:0}
+        };
+        var newIndex = data.bodyParts.length;
+        data.bodyParts.push(bodyPart);
+        
+        //add limb
+        var length = findDistance(data.bodyParts[index].pos, data.bodyParts[newIndex].pos);
+        var limb = {
+          connections: [index, newIndex],
+          currentLength: length,
+          growing: true,
+          initialLength: length,
+          maxLength: length + floor(random() * 3),
+        };
+        data.limbs.push(limb);
+      }
+      if(moreOrLess === 'less') {
+        //when removing, need to make sure it stays together
+        //need to reset indices of all others in connections
+      }
+    }
+    if(property === 'position') {
+      var bodyPart = chooseOne(data.bodyParts);
+      var xDir = chooseOne(-1,1);
+      var yDir = chooseOne(-1,1);
+      bodyPart.initialRelativePos.x = bodyPart.initialRelativePos.x + xDir * floor(random() * 3 + 1);
+      bodyPart.initialRelativePos.y = bodyPart.initialRelativePos.y + yDir * floor(random() * 3 + 1);
+    }
+  }
+  if(bodyOrLimb === 'limb') {
+    var property = chooseOne('maxLength', 'count');
+    if(property === 'maxLength') {
+      var limb = chooseOne(data.limbs);
+      var plusOrMinus = chooseOne([-1,1]);
+      limb.maxLength = limb.maxLength + plusOrMinus * floor(random() * 3 + 1); 
+    }
+    if (property === 'count') {
+      var moreOrLess = chooseOne('more', 'less');
+      if(moreOrLess === 'more') {
+        var possibleConnections = [];
+        for(var i = 0; i < data.bodyParts.length; i++) {
+          for(var j = i + 1; j < data.bodyParts.length; j++) {
+            possibleConnections.push([i,j]);
+          }
+        }
+        //REMOVE ONES THAT ARE TAKEN
+      }
+      if(moreOrLess === 'less') {
+        //NEED TO MAKE SURE IT'S STILL CONNECTED
+      }
+    }
+  }
+  for(var i = 0; i < data.limbs.length; i++) {
+    //set lengths?
+  }
+
+  //need to set stats.currentPos
+  data.stats.currentPos = {x: data.bodyParts[0].pos.x, y: data.bodyParts[0].pos.y}
+  
+return data;
 }
 
 function checkIfAllIncluded(connections, partCount) {
@@ -343,11 +464,12 @@ function killEves() {
 
   Eves.splice(slowest,1);
 
-  d3.select('.board').selectAll('.eve')
+  var killEve = d3.select('.board').selectAll('.eve')
     .data(Eves, function(d) { return d.id })
     .exit()
     .remove();
-}
+  // would be great if i could remove a piece at a time
 
+}
 
 
