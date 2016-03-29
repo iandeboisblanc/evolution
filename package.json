@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/iandeboisblanc/evolution#readme",
   "dependencies": {
+    "d3": "^3.5.16",
     "express": "^4.13.4",
     "nodemon": "^1.9.1"
   }
