@@ -1,3 +1,5 @@
+import {findDistance, limitPositions, chooseOne} from './helpers/general'
+
 module.exports = {
   applyLimbForces: (Eves) => {
     for(var i = 0; i < Eves.length; i++) {
@@ -26,7 +28,7 @@ module.exports = {
         if(xPosDiff === 0) {
           var theta = Math.PI;
         } else {
-          var theta = atan(yPosDiff / xPosDiff);
+          var theta = Math.atan(yPosDiff / xPosDiff);
         }
         if (xPosDiff >= 0) {
           force *= -1;
@@ -35,14 +37,14 @@ module.exports = {
         if(limb.growing) {
           movementFactor = 0.5;
         }
-        var dVx0 = force / b0.mass * cos(theta);
-        var dVy0 = force / b0.mass * sin(theta);
-        var dVx1 = -force / b1.mass * cos(theta) * movementFactor;
-        var dVy1 = -force / b1.mass * sin(theta) * movementFactor;
-        b0.vel.x = min( 20, max( b0.vel.x + dVx0, -20 ));
-        b0.vel.y = min( 20, max( b0.vel.y + dVy0, -20 ));
-        b1.vel.x = min( 20, max( b1.vel.x + dVx1, -20 ));
-        b1.vel.y = min( 20, max( b1.vel.y + dVy1, -20 ));
+        var dVx0 = force / b0.mass * Math.cos(theta);
+        var dVy0 = force / b0.mass * Math.sin(theta);
+        var dVx1 = -force / b1.mass * Math.cos(theta) * movementFactor;
+        var dVy1 = -force / b1.mass * Math.sin(theta) * movementFactor;
+        b0.vel.x = Math.min( 20, Math.max( b0.vel.x + dVx0, -20 ));
+        b0.vel.y = Math.min( 20, Math.max( b0.vel.y + dVy0, -20 ));
+        b1.vel.x = Math.min( 20, Math.max( b1.vel.x + dVx1, -20 ));
+        b1.vel.y = Math.min( 20, Math.max( b1.vel.y + dVy1, -20 ));
       }
     }
   },
@@ -64,15 +66,22 @@ module.exports = {
           bodyPart.vel.y = -1 * bodyPart.vel.y;
         }
         //check if offscreen
-        d3.select('#' + eve.id + 'b' + j)
-          .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y);
+
+        //NEEEDS TO GO ON CLIENT ONLY??
+        // d3.select('#' + eve.id + 'b' + j)
+        //   .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y);
+        //
       }
+
       for(var k = 0; k < eve.limbs.length; k++) {
         var b0 = eve.bodyParts[eve.limbs[k].connections[0]];
         var b1 = eve.bodyParts[eve.limbs[k].connections[1]];
-        d3.select('#' + eve.id + 'l' + k)
-          .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
-          .attr('x2', b1.pos.x).attr('y2', b1.pos.y);
+
+        //NEEDS TO GO ON CLIENT ONLY??
+        // d3.select('#' + eve.id + 'l' + k)
+        //   .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
+        //   .attr('x2', b1.pos.x).attr('y2', b1.pos.y);
+        //
       }
     }
   }
