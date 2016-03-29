@@ -8,4 +8,4 @@ console.log('Server listening on port', PORT);
 
 app.use(express.static(__dirname + '/../client'));
 
-require('./utils/runEves');
+require('./runEves');
