@@ -1,6 +1,6 @@
 import {findDistance, limitPositions, chooseOne} from './helpers/general'
 import {checkIfPartsIncluded, checkIfPartsConnected} from './helpers/bodyparts'
-import {applyLimbForces} from './helpers/movement'
+import {applyLimbForces, updateBodyPartPositions} from './helpers/movement'
 
 // setTimeout(animate, 1000);
 // setInterval(collectStats, 10000);

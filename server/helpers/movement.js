@@ -1,5 +1,5 @@
 module.exports = {
-  applyLimbForces: function(Eves) {
+  applyLimbForces: (Eves) => {
     for(var i = 0; i < Eves.length; i++) {
       var eve = Eves[i];
       for(var j = 0; j < eve.limbs.length; j++) {
@@ -43,6 +43,36 @@ module.exports = {
         b0.vel.y = min( 20, max( b0.vel.y + dVy0, -20 ));
         b1.vel.x = min( 20, max( b1.vel.x + dVx1, -20 ));
         b1.vel.y = min( 20, max( b1.vel.y + dVy1, -20 ));
+      }
+    }
+  },
+
+  updateBodyPartPositions: (Eves) => {
+    for(var i = 0; i < Eves.length; i++) {
+      var eve = Eves[i];
+      for(var j = 0; j < eve.bodyParts.length; j++) {
+        var bodyPart = eve.bodyParts[j];
+        bodyPart.pos.x += bodyPart.vel.x;
+        //check if offscreen
+        if(bodyPart.pos.x <= bodyPart.mass || bodyPart.pos.x >= settings.width - bodyPart.mass) {
+          bodyPart.pos.x = limitPositions(bodyPart.pos.x, 1, bodyPart.mass)[0];
+          bodyPart.vel.x = -1 * bodyPart.vel.x;
+        }
+        bodyPart.pos.y += bodyPart.vel.y;
+        if(bodyPart.pos.y <= bodyPart.mass || bodyPart.pos.y >= settings.height - bodyPart.mass) {
+          bodyPart.pos.y = limitPositions(1, bodyPart.pos.y, bodyPart.mass)[1];
+          bodyPart.vel.y = -1 * bodyPart.vel.y;
+        }
+        //check if offscreen
+        d3.select('#' + eve.id + 'b' + j)
+          .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y);
+      }
+      for(var k = 0; k < eve.limbs.length; k++) {
+        var b0 = eve.bodyParts[eve.limbs[k].connections[0]];
+        var b1 = eve.bodyParts[eve.limbs[k].connections[1]];
+        d3.select('#' + eve.id + 'l' + k)
+          .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
+          .attr('x2', b1.pos.x).attr('y2', b1.pos.y);
       }
     }
   }

@@ -1,5 +1,5 @@
 module.exports= {
-  checkIfAllIncluded: function(connections, partCount) {
+  checkIfPartsIncluded: (connections, partCount) => {
     var nodes = {};
     connections.forEach(function(conn) {
       nodes[conn[0]] = true;
@@ -8,7 +8,7 @@ module.exports= {
     return Object.keys(nodes).length === partCount;
   },
 
-  checkIfConnected: function(array) {
+  checkIfPartsConnected: (array) => {
     var nodes = {};
     var setInc = 1;
     for(var i = 0; i < array.length; i++) {
