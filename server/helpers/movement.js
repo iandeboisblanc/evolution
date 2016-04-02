@@ -1,3 +1,4 @@
+import settings from './settings'
 import {findDistance, limitPositions, chooseOne, randomInt, getAvgPostion} from './general'
 
 module.exports = {
