@@ -1,4 +1,4 @@
-import {findDistance, limitPositions, chooseOne} from './helpers/general'
+import {findDistance, limitPositions, chooseOne} from './general'
 
 module.exports = {
   applyLimbForces: (Eves) => {
