@@ -17,4 +17,19 @@ module.exports = {
     return args[Math.floor(Math.random() * args.length)];
   },
 
+  randomInt: (limit) => {
+    return Math.floor(Math.random() * limit);
+  },
+
+  getAvgPosition: (eve) => {
+    for(var j = 0; j < eve.bodyParts.length; j++) {
+      xPos += eve.bodyParts[j].pos.x;
+      yPos += eve.bodyParts[j].pos.y;
+    }
+    var pos = {
+      x:xPos / eve.bodyParts.length,
+      y:yPos / eve.bodyParts.length,
+    }
+    return pos;
+  }
 }

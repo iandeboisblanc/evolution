@@ -1,4 +1,4 @@
-import {findDistance, limitPositions, chooseOne} from './general'
+import {findDistance, limitPositions, chooseOne, randomInt, getAvgPostion} from './general'
 
 module.exports = {
   applyLimbForces: (Eves) => {

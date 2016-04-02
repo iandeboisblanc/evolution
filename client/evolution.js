@@ -228,8 +228,8 @@ function deriveEveData(proto) {
             y:linkedPart.pos.y + distance * sin(angle)
           },
           initialRelativePos: {
-            x:linkedPart.pos.x + distance * cos(angle), 
-            y:linkedPart.pos.x + distance * cos(angle),
+            x:linkedPart.initialRelativePos.x + distance * cos(angle), 
+            y:linkedPart.initialRelativePos.x + distance * cos(angle),
           },
           vel: {x:0, y:0}
         };
