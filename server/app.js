@@ -1,8 +1,19 @@
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);  
-var PORT = process.env.PORT || 3000;
 var runEves = require('./runEves');
+var settings = require('./helpers/settings');
+
+var PORT = process.env.PORT || 3000;
+
+// CORS handling
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*'); 
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 app.listen(PORT);
 console.log('Server listening on port', PORT);
@@ -13,7 +24,11 @@ runEves(Eves);
 
 app.use(express.static(__dirname + '/../client'));
 
+// Routes
 app.get('/api/eves', function(req, res) {
-  res.status(200).send(Eves)
+  res.status(200).send(Eves);
+});
+app.get('/api/settings', function(req, res) {
+  res.status(200).send(settings);
 });
 

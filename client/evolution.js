@@ -8,6 +8,21 @@ var settings = {
 
 Eves = [];
 
+HTTPRequest.get('http://localhost:3000/api/eves', function(status, headers, content) {
+  Eves = JSON.parse(content);
+  //INIT:
+  createBoard();
+  generateEves();
+  setTimeout(animate, 1000);
+  setInterval(collectStats, 10000);
+  setInterval(function() {
+    killEves();
+    Eves.push(deriveEveData(chooseOne(Eves)));
+    generateEves();
+  }, 10000);
+});
+
+
 //helpful things
 var random = Math.random;
 var max = Math.max;
@@ -35,18 +50,6 @@ var chooseOne = function(args) {
   return args[floor(random() * args.length)];
 }
 
-//INIT:
-
-createBoard();
-populateData();
-generateEves();
-setTimeout(animate, 1000);
-setInterval(collectStats, 10000);
-setInterval(function() {
-  killEves();
-  Eves.push(deriveEveData(chooseOne(Eves)));
-  generateEves();
-}, 10000);
 
 //FUNCTIONS:
 
