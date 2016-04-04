@@ -6,10 +6,13 @@ var settings = {
   height: 550,
 }
 
-Eves = [];
+var Eves = [];
 
-HTTPRequest.get('http://localhost:3000/api/eves', function(status, headers, content) {
-  Eves = JSON.parse(content);
+HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, content) {
+  var body = JSON.parse(content);
+  settings = body.settings;
+  Eves = body.Eves;
+
   //INIT:
   createBoard();
   generateEves();
@@ -19,7 +22,7 @@ HTTPRequest.get('http://localhost:3000/api/eves', function(status, headers, cont
     killEves();
     Eves.push(deriveEveData(chooseOne(Eves)));
     generateEves();
-  }, 10000);
+  }, settings.killTime);
 });
 
 

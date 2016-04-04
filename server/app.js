@@ -25,10 +25,6 @@ runEves(Eves);
 app.use(express.static(__dirname + '/../client'));
 
 // Routes
-app.get('/api/eves', function(req, res) {
-  res.status(200).send(Eves);
+app.get('/api/state', function(req, res) {
+  res.status(200).send({Eves:Eves, settings:settings});
 });
-app.get('/api/settings', function(req, res) {
-  res.status(200).send(settings);
-});
-
