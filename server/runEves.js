@@ -24,11 +24,6 @@ var runEves = function(Eves) {
     Eves.push(deriveEveData(eve));
   }, settings.killTime)
 
-  // //Check progress
-  // setInterval(() => {
-  //   console.log('Eve 1, limb1:', Eves[0].limbs[0])
-  // }, 1000)
-
   // setInterval(collectStats, 10000);
 
   //setInterval(saveStateToDB, 10000)
