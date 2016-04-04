@@ -14,14 +14,13 @@ for(var i = 0; i < settings.eveCount; i ++) {
 setInterval(() => {
   applyLimbForces(Eves);
   updateBodyPartPositions(Eves);
-  // console.log('YO!',chooseOne.valueOf())
 }, settings.stepTime)
 
 //Selective Pressure:
 setInterval(() => {
   killEve(Eves);
   var eve = chooseOne(Eves);
-  deriveEveData(eve);
+  Eves.push(deriveEveData(eve));
 }, settings.killTime)
 
 // //Check progress
