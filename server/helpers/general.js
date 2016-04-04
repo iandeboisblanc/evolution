@@ -11,7 +11,7 @@ module.exports = {
     return [x,y];
   },
 
-  chooseOne: (args) => {
+  chooseOne: function(args) {
     args = Array.prototype.slice.call(arguments);
     if(args.length === 1 && typeof Array.isArray(args[0])) {
       return args[0][Math.floor(Math.random() * args[0].length)]

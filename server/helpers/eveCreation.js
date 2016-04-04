@@ -97,7 +97,7 @@ module.exports = {
           var index = randomInt(data.bodyParts.length);
           var linkedPart = data.bodyParts[index];
           var distance = randomInt(10) + 2;
-          var angle = random() * 2 * Math.PI;
+          var angle = Math.random() * 2 * Math.PI;
           var bodyPart = {
             mass: randomInt(10) + 3,
             pos: {
