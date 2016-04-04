@@ -13,7 +13,7 @@ HTTPRequest.get('http://localhost:3000/api/eves', function(status, headers, cont
   //INIT:
   createBoard();
   generateEves();
-  setTimeout(animate, 1000);
+  animate();
   setInterval(collectStats, 10000);
   setInterval(function() {
     killEves();
