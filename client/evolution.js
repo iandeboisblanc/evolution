@@ -2,8 +2,8 @@
 var settings = {
   stepTime: 50,
   eveCount: 20,
-  width: window.innerWidth - 40,
-  height: window.innerHeight - 40,
+  width: 1200,
+  height: 550,
 }
 
 Eves = [];
