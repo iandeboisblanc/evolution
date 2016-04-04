@@ -1,11 +1,5 @@
 //settings
-var settings = {
-  stepTime: 50,
-  eveCount: 20,
-  width: 1200,
-  height: 550,
-}
-
+var settings = {}
 var Eves = [];
 
 HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, content) {
