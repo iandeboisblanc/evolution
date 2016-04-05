@@ -57,7 +57,6 @@ var getJunctions = function(array) {
 };
 
 //FUNCTIONS:
-
 function drawEve(data) {
   var eve = document.createElementNS('http://www.w3.org/2000/svg','g');
 
@@ -77,6 +76,7 @@ function drawEve(data) {
       .append('line')
       .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
       .attr('x2', b1.pos.x).attr('y2', b1.pos.y)
+      .attr('class', 'part')
       .attr('id', data.id + 'l' + i);
   }
   
@@ -87,11 +87,11 @@ function drawEve(data) {
       .append('circle')
       .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y)
       .attr('r', bodyPart.mass)
+      .attr('class', 'part')
       .attr('id', data.id + 'b' + (i));
   }
   return eve;
 };
-
 
 function renderBoard() {
   d3.select('body').selectAll('svg')
@@ -112,7 +112,14 @@ function deriveEveData(proto) {
     generation: proto.stats.generation + 1,
     ancestors: proto.stats.ancestors.concat(proto)
   };
-  
+
+  var newPos = {x:randomInt(settings.width - 40) + 20, y:randomInt(settings.height - 40) + 20} 
+  data.bodyParts[0].pos = newPos;
+  for(var i = 1; i < data.bodyParts.length; i++) {
+    data.bodyParts[i].pos.x = data.bodyParts[0].pos.x + data.bodyParts[i].initialRelativePos.x;
+    data.bodyParts[i].pos.y = data.bodyParts[0].pos.y + data.bodyParts[i].initialRelativePos.y;
+  }
+
   //reset to initial body positions?  
 
   var bodyOrLimb = chooseOne('body','limb');
@@ -370,10 +377,28 @@ function killEves() {
   Eves.splice(slowest,1);
 
   //Remove from board
+  var elementsToRemove = [];
   var killEve = d3.select('.board').selectAll('.eve')
     .data(Eves, function(d) { return d.id })
     .exit()
     .remove();
+
+  // var partsToRemove = killEve.selectAll('.part')[0];
+  // partsToRemove.push(killEve);
+  // var counter = partsToRemove.length;
+  // var removePiece = function(queue) {
+  //   var part = d3.select(queue.splice(0,1)[0]);
+  //   part.remove();
+  //   while(counter > 0) {
+  //     counter--;
+  //     setTimeout(function() {
+  //       removePiece(queue);
+  //     },100)
+  //   }
+  // }
+  
+  // removePiece(partsToRemove);
+    // .remove();
   // would be great if i could remove a piece at a time
 
 }
