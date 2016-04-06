@@ -59,10 +59,10 @@ var getJunctions = function(array) {
 //FUNCTIONS:
 function drawEve(data) {
   var eve = document.createElementNS('http://www.w3.org/2000/svg','g');
-
+  var eveId = 'eve' + data.id;
   d3.select(eve)
     .attr('class','eve')
-    .attr('id', data.id);
+    .attr('id', eveId);
   //if distance between starting x and wall are less than 50, 
     //draw it on oneside, 
   // else, 
@@ -77,7 +77,7 @@ function drawEve(data) {
       .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
       .attr('x2', b1.pos.x).attr('y2', b1.pos.y)
       .attr('class', 'part')
-      .attr('id', data.id + 'l' + i);
+      .attr('id', eveId + 'l' + i);
   }
   
   // Render body parts:
@@ -88,7 +88,7 @@ function drawEve(data) {
       .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y)
       .attr('r', bodyPart.mass)
       .attr('class', 'part')
-      .attr('id', data.id + 'b' + (i));
+      .attr('id', eveId + 'b' + (i));
   }
   return eve;
 };
@@ -328,7 +328,7 @@ function updateBodyPartPositions() {
       }
 
       //render new body part positions:
-      d3.select('#' + eve.id + 'b' + j)
+      d3.select('#eve' + eve.id + 'b' + j)
         .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y);
     }
 
@@ -336,7 +336,7 @@ function updateBodyPartPositions() {
     for(var k = 0; k < eve.limbs.length; k++) {
       var b0 = eve.bodyParts[eve.limbs[k].connections[0]];
       var b1 = eve.bodyParts[eve.limbs[k].connections[1]];
-      d3.select('#' + eve.id + 'l' + k)
+      d3.select('#eve' + eve.id + 'l' + k)
         .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
         .attr('x2', b1.pos.x).attr('y2', b1.pos.y);
     }
