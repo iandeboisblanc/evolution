@@ -21,7 +21,9 @@ var Eve = sequelize.define('eve', {
   }
 });
 
-Eve.hasOne(Eve, {foreignKey: 'parent_id'});
+Eve.belongsTo(Eve, {foreignKey: 'parent_id'});
+
+sequelize.sync();
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

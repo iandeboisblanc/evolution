@@ -1,18 +1,17 @@
 import settings from './settings'
 import {findDistance, limitPositions, chooseOne, randomInt, getAvgPosition} from './general'
-import db from './../db'
 
 module.exports = {
-  createEveData:() => {
+  createEveData:(db) => {
 
     var data = {};
-    data.id = 'eve' + randomInt(10000000000);
+    // data.id = 'eve' + randomInt(10000000000);
     data.stats = {
       distanceTraveled: 0,
       //stored in DB:
       timeSinceBirth: 0,
       generation: 1,
-      ancestors: []
+      // ancestors: []
     }
 
     var bodyPartCount = randomInt(5) + 2;
@@ -69,12 +68,9 @@ module.exports = {
     data.stats.currentPos = getAvgPosition(data);
 
     //write to db
-    db.sequelize.sync()
-    .then(function() {
-      return db.Eve.create({
-        ancestor_id: null,
-        generation: 0,
-      })
+    db.Eve.create({
+      parent_id: null,
+      generation: 0,
     })
     .then(function(eve) {
       data.id = eve.dataValues.id;

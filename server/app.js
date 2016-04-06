@@ -23,7 +23,7 @@ console.log('Server listening on port', PORT);
 
 var Eves = [];
 
-runEves(Eves);
+runEves(Eves, db);
 
 app.use(express.static(__dirname + '/../client'));
 

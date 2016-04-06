@@ -8,7 +8,7 @@ var runEves = function(Eves, db) {
 
   //Create initial data:
   for(var i = 0; i < settings.eveCount; i ++) {
-    Eves.push(createEveData());
+    Eves.push(createEveData(db));
   }
 
   //Animate:
