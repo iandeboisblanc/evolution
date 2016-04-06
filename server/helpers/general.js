@@ -24,6 +24,8 @@ module.exports = {
   },
 
   getAvgPosition: (eve) => {
+    var xPos = 0;
+    var yPos = 0;
     for(var j = 0; j < eve.bodyParts.length; j++) {
       xPos += eve.bodyParts[j].pos.x;
       yPos += eve.bodyParts[j].pos.y;
