@@ -22,8 +22,7 @@ app.listen(PORT);
 console.log('Server listening on port', PORT);
 
 var Eves = [];
-
-runEves(Eves, db);
+setTimeout(runEves.bind(null, Eves, db),1000);
 
 app.use(express.static(__dirname + '/../client'));
 
