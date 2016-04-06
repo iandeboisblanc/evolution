@@ -7,6 +7,7 @@ var sequelize = new Sequelize('evolution', 'iandeboisblanc', null, {
   port: '5432'
 });
 
+
 var Eve = sequelize.define('eve', {
   id: {
     type: Sequelize.INTEGER,
@@ -21,9 +22,11 @@ var Eve = sequelize.define('eve', {
   }
 });
 
-Eve.belongsTo(Eve, {foreignKey: 'parent_id'});
+Eve.hasOne(Eve, {foreignKey: 'parent_id'});
 
-sequelize.sync();
+sequelize.sync(
+  // {force:true}
+);
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
