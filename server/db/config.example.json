@@ -8,8 +8,8 @@
     "port":"5432"
   },
   "development":{
-    "username":"iandeboisblanc",
-    "password":"",
+    "username":"<<username>>",
+    "password":"<<password>>",
     "database":"evolution",
     "host":"localhost",
     "dialect":"postgres",
