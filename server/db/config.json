@@ -1,0 +1,18 @@
+{
+  "production":{
+    "username":"postgres",
+    "password":"",
+    "database":"evolution",
+    "host":"postgres",
+    "dialect":"postgres",
+    "port":"5432"
+  },
+  "development":{
+    "username":"iandeboisblanc",
+    "password":"",
+    "database":"evolution",
+    "host":"localhost",
+    "dialect":"postgres",
+    "port":"5432"
+  }
+}

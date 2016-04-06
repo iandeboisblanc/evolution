@@ -1,0 +1,17 @@
+version: '2'
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: ""
+      POSTGRES_USER: "iandeboisblanc"
+      POSTGRES_DB: "evolution"
+  thumbroll-server:
+    build: .
+    links:
+      - postgres
+    ports:
+      - "80:80"
+    environment: 
+      NODE_ENV: "production"
+      PORT: "80"
