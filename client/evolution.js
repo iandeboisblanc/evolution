@@ -106,11 +106,12 @@ function renderBoard() {
 function deriveEveData(proto) {
   var data = JSON.parse(JSON.stringify(proto));
   data.id = 'eve' + randomInt(10000000000);
+  var ancestors = proto.stats.ancestors ? proto.stats.ancestors.concat(proto) : [proto];
   data.stats = {
     distanceTraveled: 0,
     timeSinceBirth: 0,
     generation: proto.stats.generation + 1,
-    ancestors: proto.stats.ancestors.concat(proto)
+    ancestors: ancestors
   };
 
   var newPos = {x:randomInt(settings.width - 40) + 20, y:randomInt(settings.height - 40) + 20} 
