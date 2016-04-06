@@ -70,7 +70,7 @@ module.exports = {
     //write to db
     db.Eve.create({
       parent_id: null,
-      generation: 0,
+      generation: 1,
     })
     .then(function(eve) {
       data.id = eve.dataValues.id;
@@ -81,9 +81,9 @@ module.exports = {
     return data;
   },
 
-  deriveEveData: (proto) => {
+  deriveEveData: (proto, db) => {
     var data = JSON.parse(JSON.stringify(proto));
-    data.id = 'eve' + randomInt(10000000000);
+    // data.id = 'eve' + randomInt(10000000000);
     data.stats = {
       distanceTraveled: 0,
       //stored in DB:
@@ -178,7 +178,16 @@ module.exports = {
 
     data.stats.currentPos = getAvgPosition(data);
 
-    //write to db
+    db.Eve.create({
+      parent_id: proto.id,
+      generation: data.stats.generation,
+    })
+    .then(function(eve) {
+      data.id = eve.dataValues.id;
+    })
+    .catch(function(err) {
+      console.error('Error saving eve data to db:', err);
+    })
     return data;
   }
 }

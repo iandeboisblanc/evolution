@@ -21,7 +21,7 @@ var runEves = function(Eves, db) {
   setInterval(() => {
     killEve(Eves);
     var eve = chooseOne(Eves);
-    Eves.push(deriveEveData(eve));
+    Eves.push(deriveEveData(eve, db));
   }, settings.killTime)
 
   // setInterval(collectStats, 10000);
