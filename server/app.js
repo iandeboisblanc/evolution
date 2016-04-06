@@ -15,6 +15,9 @@ app.use(function(req, res, next) {
   next();
 });
 
+// Connect to DB
+var db = require('./db');
+
 app.listen(PORT);
 console.log('Server listening on port', PORT);
 

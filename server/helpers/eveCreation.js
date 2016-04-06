@@ -1,11 +1,12 @@
 import settings from './settings'
-import {findDistance, limitPositions, chooseOne, randomInt, getAvgPostion} from './general'
+import {findDistance, limitPositions, chooseOne, randomInt, getAvgPosition} from './general'
+import db from './../db'
 
 module.exports = {
   createEveData:() => {
 
     var data = {};
-    data.id = 'eve' + Math.floor(Math.random() * 10000000000);
+    data.id = 'eve' + randomInt(10000000000);
     data.stats = {
       distanceTraveled: 0,
       //stored in DB:
@@ -16,8 +17,6 @@ module.exports = {
 
     var bodyPartCount = randomInt(5) + 2;
     data.bodyParts = createNBodyParts(bodyPartCount, settings.width, settings.height);
-
-    // data.stats.currentPos = {x: xSum / data.bodyParts.length, y: ySum / data.bodyParts.length};
 
     data.limbs = [];
 
@@ -67,7 +66,23 @@ module.exports = {
       };
       data.limbs.push(limb);
     }
-  return data;
+    data.stats.currentPos = getAvgPosition(data);
+
+    //write to db
+    db.sequelize.sync()
+    .then(function() {
+      return db.Eve.create({
+        ancestor_id: null,
+        generation: 0,
+      })
+    })
+    .then(function(eve) {
+      data.id = eve.dataValues.id;
+    })
+    .catch(function(err) {
+      console.error('Error saving eve data to db:', err);
+    })
+    return data;
   },
 
   deriveEveData: (proto) => {
@@ -78,7 +93,7 @@ module.exports = {
       //stored in DB:
       timeSinceBirth: 0,
       generation: proto.stats.generation + 1,
-      ancestors: proto.stats.ancestors.concat(proto)
+      // ancestors: proto.stats.ancestors.concat(proto)
     };
     
     //reset to initial body positions?
@@ -165,10 +180,10 @@ module.exports = {
       //set lengths?
     }
 
-    //need to set stats.currentPos
-    data.stats.currentPos = {x: data.bodyParts[0].pos.x, y: data.bodyParts[0].pos.y}
-    
-  return data;
+    data.stats.currentPos = getAvgPosition(data);
+
+    //write to db
+    return data;
   }
 }
 
