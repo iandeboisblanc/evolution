@@ -21,6 +21,15 @@ var Eve = sequelize.define('eve', {
   },
   generation: {
     type: Sequelize.INTEGER
+  },
+  body_parts: {
+    type: Sequelize.JSON
+  },
+  limbs: {
+    type: Sequelize.JSON
+  },
+  killedAt: {
+    type: Sequelize.DATE
   }
 });
 

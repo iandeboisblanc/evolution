@@ -5,13 +5,11 @@ module.exports = {
   createEveData:(db) => {
 
     var data = {};
-    // data.id = 'eve' + randomInt(10000000000);
     data.stats = {
       distanceTraveled: 0,
       //stored in DB:
       timeSinceBirth: 0,
       generation: 1,
-      // ancestors: []
     }
 
     var bodyPartCount = randomInt(5) + 2;
@@ -83,13 +81,11 @@ module.exports = {
 
   deriveEveData: (proto, db) => {
     var data = JSON.parse(JSON.stringify(proto));
-    // data.id = 'eve' + randomInt(10000000000);
     data.stats = {
       distanceTraveled: 0,
       //stored in DB:
       timeSinceBirth: 0,
       generation: proto.stats.generation + 1,
-      // ancestors: proto.stats.ancestors.concat(proto)
     };
     
     //reset to initial body positions?
