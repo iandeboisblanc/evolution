@@ -14,16 +14,18 @@ var runEves = function(Eves, db) {
   setInterval(() => {
     applyLimbForces(Eves);
     updateBodyPartPositions(Eves);
-  }, settings.stepTime)
+  }, settings.stepTime);
 
   //Selective Pressure:
   setInterval(() => {
     killEve(Eves, db);
     var eve = chooseOne(Eves);
     Eves.push(deriveEveData(eve, db));
-  }, settings.killTime)
+  }, settings.killTime);
 
-  // setInterval(collectStats, 10000);
+  setInterval(() => {
+    collectStats(Eves);
+  }, 10000);
 
   //setInterval(saveStateToDB, 10000)
   

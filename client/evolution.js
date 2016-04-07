@@ -57,6 +57,20 @@ var getJunctions = function(array) {
   return possibleConnections;
 };
 
+var getAvgPosition = function(eve) {
+  var xPos = 0;
+  var yPos = 0;
+  for(var j = 0; j < eve.bodyParts.length; j++) {
+    xPos += eve.bodyParts[j].pos.x;
+    yPos += eve.bodyParts[j].pos.y;
+  }
+  var pos = {
+    x:xPos / eve.bodyParts.length,
+    y:yPos / eve.bodyParts.length,
+  }
+  return pos;
+};
+
 //FUNCTIONS:
 function drawEve(data) {
   var eve = document.createElementNS('http://www.w3.org/2000/svg','g');
@@ -110,7 +124,7 @@ function deriveEveData(proto) {
   var ancestors = proto.stats.ancestors ? proto.stats.ancestors.concat(proto) : [proto];
   data.stats = {
     distanceTraveled: 0,
-    timeSinceBirth: 0,
+    cyclesSinceBirth: 0,
     generation: proto.stats.generation + 1,
     ancestors: ancestors
   };
@@ -348,29 +362,19 @@ function updateBodyPartPositions() {
 function collectStats() {
   for(var i = 0; i < Eves.length; i++) {
     var eve = Eves[i];
-    var xPos = 0;
-    var yPos = 0;
-    for(var j = 0; j < eve.bodyParts.length; j++) {
-      xPos += eve.bodyParts[j].pos.x;
-      yPos += eve.bodyParts[j].pos.y;
-    }
-    var pos = {
-      x:xPos / eve.bodyParts.length,
-      y:yPos / eve.bodyParts.length,
-    }
-
+    var pos = getAvgPosition(eve);
     var distance = findDistance(pos, eve.stats.currentPos);
     eve.stats.distanceTraveled += distance;
-    eve.stats.timeSinceBirth += 1;
-    console.log(eve.id, 'avg speed is', eve.stats.distanceTraveled / eve.stats.timeSinceBirth);
+    eve.stats.cyclesSinceBirth += 1;
+    console.log(eve.id, 'avg speed is', eve.stats.distanceTraveled / eve.stats.cyclesSinceBirth);
   }
 }
 
 function killEves() {
   var slowest = 0;
   for(var i = 0; i < Eves.length; i++) {
-    var eveSpeed = Eves[i].stats.distanceTraveled / Eves[i].stats.timeSinceBirth;
-    var smallestSpeed = Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.timeSinceBirth;
+    var eveSpeed = Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth;
+    var smallestSpeed = Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.cyclesSinceBirth;
     if(eveSpeed < smallestSpeed) {
       slowest = i;
     }

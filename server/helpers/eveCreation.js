@@ -7,10 +7,11 @@ module.exports = {
     var data = {};
     data.stats = {
       distanceTraveled: 0,
+      cyclesSinceBirth: 0,
       //stored in DB:
-      timeSinceBirth: 0,
       generation: 1,
     }
+    
 
     var bodyPartCount = randomInt(5) + 2;
     data.bodyParts = createNBodyParts(bodyPartCount, settings.width, settings.height);
@@ -83,8 +84,8 @@ module.exports = {
     var data = JSON.parse(JSON.stringify(proto));
     data.stats = {
       distanceTraveled: 0,
+      cyclesSinceBirth: 0,
       //stored in DB:
-      timeSinceBirth: 0,
       generation: proto.stats.generation + 1,
     };
     

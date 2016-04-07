@@ -1,12 +1,12 @@
-import {findDistance, limitPositions, chooseOne, randomInt, getAvgPostion} from './general'
+import {findDistance, limitPositions, chooseOne, randomInt, getAvgPosition} from './general'
 
 module.exports = {
 
   killEve: (Eves, db) => {
     var slowest = 0;
     for(var i = 0; i < Eves.length; i++) {
-      var eveSpeed = Eves[i].stats.distanceTraveled / Eves[i].stats.timeSinceBirth;
-      var smallestSpeed = Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.timeSinceBirth;
+      var eveSpeed = Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth;
+      var smallestSpeed = Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.cyclesSinceBirth;
       if(eveSpeed < smallestSpeed) {
         slowest = i;
       }
@@ -25,21 +25,11 @@ module.exports = {
   collectStats: (Eves) => {
     for(var i = 0; i < Eves.length; i++) {
       var eve = Eves[i];
-      var xPos = 0;
-      var yPos = 0;
-      for(var j = 0; j < eve.bodyParts.length; j++) {
-        xPos += eve.bodyParts[j].pos.x;
-        yPos += eve.bodyParts[j].pos.y;
-      }
-      var pos = {
-        x:xPos / eve.bodyParts.length,
-        y:yPos / eve.bodyParts.length,
-      }
-
+      var pos = getAvgPosition(eve);
       var distance = findDistance(pos, eve.stats.currentPos);
       eve.stats.distanceTraveled += distance;
-      eve.stats.timeSinceBirth += 1;
-      // console.log(eve.id, 'avg speed is', eve.stats.distanceTraveled / eve.stats.timeSinceBirth);
+      eve.stats.cyclesSinceBirth += 1;
+      // console.log(eve.id, 'avg speed is', eve.stats.distanceTraveled / eve.stats.cyclesSinceBirth);
     }
   },
 
