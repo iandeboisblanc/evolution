@@ -168,8 +168,31 @@ module.exports = {
       if (property === 'count') {
         var moreOrLess = chooseOne('more', 'less');
         if(moreOrLess === 'more') {
-          var possibleConnections = getJunctions(data.bodyParts);
-          //REMOVE ONES THAT ARE TAKEN
+          var possibleConnections = getJunctions(data.bodyParts).map(function(junction) {
+            return JSON.stringify(junction);
+          });
+          for(var i = 0; i < data.limbs.length; i++) {
+            var connectionsString = JSON.stringify(data.limbs[i].connections);
+            var substrIndex = possibleConnections.indexOf(connectionsString);
+            if(substrIndex > -1) {
+              possibleConnections.splice(substrIndex,1);
+            }
+          }
+          var newConnection = chooseOne(possibleConnections);
+          if(newConnection) {
+            newConnection = JSON.parse(newConnection);
+            var b0 = data.bodyParts[newConnection[0]];
+            var b1 = data.bodyParts[newConnection[1]];
+            var length = findDistance(b0.pos, b1.pos);
+            var limb = {
+              connections: newConnection,
+              currentLength: length,
+              growing: true,
+              initialLength: length,
+              maxLength: length + randomInt(3),
+            };
+            data.limbs.push(limb);
+          }
         }
         if(moreOrLess === 'less') {
           //NEED TO MAKE SURE IT'S STILL CONNECTED
