@@ -5,8 +5,8 @@ module.exports = {
   killEve: (Eves, db) => {
     var slowest = 0;
     for(var i = 0; i < Eves.length; i++) {
-      var eveSpeed = Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth;
-      var smallestSpeed = Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.cyclesSinceBirth;
+      var eveSpeed = (Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth) || 0;
+      var smallestSpeed = (Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.cyclesSinceBirth) || 0;
       if(eveSpeed < smallestSpeed) {
         slowest = i;
       }
@@ -29,7 +29,6 @@ module.exports = {
       var distance = findDistance(pos, eve.stats.currentPos);
       eve.stats.distanceTraveled += distance;
       eve.stats.cyclesSinceBirth += 1;
-      // console.log(eve.id, 'avg speed is', eve.stats.distanceTraveled / eve.stats.cyclesSinceBirth);
     }
   },
 

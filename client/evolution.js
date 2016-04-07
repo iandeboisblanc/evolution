@@ -105,6 +105,16 @@ function drawEve(data) {
       .attr('class', 'part')
       .attr('id', eveId + 'b' + (i));
   }
+
+  d3.select(eve)
+  .on('click', function(d,i) {
+    d.beingDragged = true;
+    console.log('Stats for eve: ' + d.id + '\n' +
+    'Generation: ' + d.stats.generation + '\n' +
+    'Distance Travelled: ' + d.stats.distanceTraveled + '\n' +
+    'Avg Speed: ' + ((d.stats.distanceTraveled / d.stats.cyclesSinceBirth) || 0));
+});
+
   return eve;
 };
 
@@ -366,15 +376,14 @@ function collectStats() {
     var distance = findDistance(pos, eve.stats.currentPos);
     eve.stats.distanceTraveled += distance;
     eve.stats.cyclesSinceBirth += 1;
-    console.log(eve.id, 'avg speed is', eve.stats.distanceTraveled / eve.stats.cyclesSinceBirth);
   }
 }
 
 function killEves() {
   var slowest = 0;
   for(var i = 0; i < Eves.length; i++) {
-    var eveSpeed = Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth;
-    var smallestSpeed = Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.cyclesSinceBirth;
+    var eveSpeed = (Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth) || 0;
+    var smallestSpeed = (Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.cyclesSinceBirth) || 0;
     if(eveSpeed < smallestSpeed) {
       slowest = i;
     }
