@@ -11,7 +11,7 @@ module.exports = {
       //stored in DB:
       generation: 1,
     }
-    
+
 
     var bodyPartCount = randomInt(5) + 2;
     data.bodyParts = createNBodyParts(bodyPartCount, settings.width, settings.height);
@@ -100,6 +100,9 @@ module.exports = {
     var bodyOrLimb = chooseOne('body','limb');
     if(bodyOrLimb === 'body') {
       var property = chooseOne('mass','count','position');
+      if(randomInt(1000) === 18) {
+        property = 'color'; 
+      }
       if(property === 'mass') {
         var bodyPart = chooseOne(data.bodyParts);
         var posOrNeg = chooseOne(-1,1);
@@ -150,6 +153,10 @@ module.exports = {
         bodyPart.initialRelativePos.x = bodyPart.initialRelativePos.x + xDir * (randomInt(3) + 1);
         bodyPart.initialRelativePos.y = bodyPart.initialRelativePos.y + yDir * (randomInt(3) + 1);
       }
+      if(property === 'color') {
+        var bodyPart = chooseOne(data.bodyParts);
+        bodyPart.color = 'rgb(' + randomInt(256) + ',' + randomInt(256) + ',' + randomInt(256) + ')';
+      }
     }
     if(bodyOrLimb === 'limb') {
       var property = chooseOne('maxLength', 'count');
@@ -195,7 +202,8 @@ function createNBodyParts(n, maxX, maxY) {
     mass: randomInt(10) + 3,
     pos: {x:randomInt(maxX), y:randomInt(maxY)},
     initialRelativePos: {x:0, y:0},
-    vel: {x:0, y:0}
+    vel: {x:0, y:0},
+    color: '#ffffff'
   }
   bodyPartsArray.push(firstPart);
 
@@ -211,8 +219,8 @@ function createNBodyParts(n, maxX, maxY) {
       mass: randomInt(10) + 3,
       pos: {x:currentXPos, y:currentYPos},
       initialRelativePos: {x:currentXPos - firstPart.pos.x, y:currentYPos - firstPart.pos.y},
-      vel: {x:0, y:0}
-      //color
+      vel: {x:0, y:0},
+      color: '#ffffff'
       //spikes/plates if i'm into that
     }
     bodyPartsArray.push(bodyPart);

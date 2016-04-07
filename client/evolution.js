@@ -66,7 +66,7 @@ function drawEve(data) {
       .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
       .attr('x2', b1.pos.x).attr('y2', b1.pos.y)
       .attr('class', 'part')
-      .attr('id', eveId + 'l' + i);
+      .attr('id', eveId + 'l' + i)
   }
   
   // Render body parts:
@@ -77,6 +77,7 @@ function drawEve(data) {
       .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y)
       .attr('r', bodyPart.mass)
       .attr('class', 'part')
+      .style('fill', bodyPart.color)
       .attr('id', eveId + 'b' + (i));
   }
 
@@ -240,6 +241,9 @@ function deriveEveData(proto) {
   var bodyOrLimb = chooseOne('body','limb');
   if(bodyOrLimb === 'body') {
     var property = chooseOne('mass','count','position');
+    if(randomInt(1000) === 18) {
+      property = 'color';
+    }
     if(property === 'mass') {
       var bodyPart = chooseOne(data.bodyParts);
       var posOrNeg = chooseOne(-1,1);
@@ -289,6 +293,10 @@ function deriveEveData(proto) {
       var yDir = chooseOne(-1,1);
       bodyPart.initialRelativePos.x = bodyPart.initialRelativePos.x + xDir * (randomInt(3) + 1);
       bodyPart.initialRelativePos.y = bodyPart.initialRelativePos.y + yDir * (randomInt(3) + 1);
+    }
+    if(property === 'color') {
+      var bodyPart = chooseOne(data.bodyParts);
+      bodyPart.color = 'rgb(' + randomInt(256) + ',' + randomInt(256) + ',' + randomInt(256) + ')';
     }
   }
   if(bodyOrLimb === 'limb') {

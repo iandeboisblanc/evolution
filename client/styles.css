@@ -18,7 +18,7 @@ body {
 }
 
 circle {
-  fill: white;
+  /*fill: white;*/
   stroke: black;
   stroke-width: 5px;
   /*transition: all 0.01s;*/
