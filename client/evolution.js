@@ -130,7 +130,7 @@ function deriveEveData(proto) {
     if(property === 'mass') {
       var bodyPart = chooseOne(data.bodyParts);
       var posOrNeg = chooseOne(-1,1);
-      bodyPart.mass = bodyPart.mass + posOrNeg * (randomInt(1) + 1);
+      bodyPart.mass = Math.max(1, bodyPart.mass + posOrNeg * (randomInt(2) + 1));
     }
     if(property === 'count') {
       var moreOrLess = chooseOne('more', 'less');
