@@ -266,7 +266,8 @@ function deriveEveData(proto) {
             x:linkedPart.initialRelativePos.x + distance * Math.cos(angle), 
             y:linkedPart.initialRelativePos.x + distance * Math.cos(angle),
           },
-          vel: {x:0, y:0}
+          vel: {x:0, y:0},
+          color: '#ffffff'
         };
         var newIndex = data.bodyParts.length;
         data.bodyParts.push(bodyPart);
@@ -351,9 +352,7 @@ function deriveEveData(proto) {
       }
     }
   }
-
   data.stats.currentPos = getAvgPosition(data);
-  
   return data;
 }
 
@@ -365,5 +364,6 @@ function collectStats() {
     var distance = findDistance(pos, eve.stats.currentPos);
     eve.stats.distanceTraveled += distance;
     eve.stats.cyclesSinceBirth += 1;
+    eve.stats.currentPos = pos;
   }
 }

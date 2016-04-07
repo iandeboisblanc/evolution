@@ -29,6 +29,7 @@ module.exports = {
       var distance = findDistance(pos, eve.stats.currentPos);
       eve.stats.distanceTraveled += distance;
       eve.stats.cyclesSinceBirth += 1;
+      eve.stats.currentPos = pos;
     }
   },
 

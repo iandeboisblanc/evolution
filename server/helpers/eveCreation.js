@@ -126,7 +126,8 @@ module.exports = {
               x:linkedPart.initialRelativePos.x + distance * Math.cos(angle), 
               y:linkedPart.initialRelativePos.x + distance * Math.cos(angle),
             },
-            vel: {x:0, y:0}
+            vel: {x:0, y:0},
+            color: '#ffffff'
           };
           var newIndex = data.bodyParts.length;
           data.bodyParts.push(bodyPart);
