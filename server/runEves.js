@@ -18,7 +18,7 @@ var runEves = function(Eves, db) {
 
   //Selective Pressure:
   setInterval(() => {
-    killEve(Eves);
+    killEve(Eves, db);
     var eve = chooseOne(Eves);
     Eves.push(deriveEveData(eve, db));
   }, settings.killTime)
