@@ -24,7 +24,7 @@ HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, con
     renderEves();
   }, settings.killTime);
 
-  setInterval(collectStats, 10000);
+  setInterval(collectStats, 2000);
 });
 
 //FUNCTIONS:
@@ -336,7 +336,18 @@ function deriveEveData(proto) {
         }
       }
       if(moreOrLess === 'less') {
-        //NEED TO MAKE SURE IT'S STILL CONNECTED
+        var partCount = data.bodyParts.length;
+        for(var i = 0; i < data.limbs.length; i++) {
+          var limbsCopy = JSON.parse(JSON.stringify(data.limbs));
+          limbsCopy.splice(i,1);
+          var connectionsArray = limbsCopy.map(function(limb) {
+            return limb.connections;
+          });
+          if(checkIfPartsIncluded(connectionsArray, partCount) && checkIfPartsConnected(connectionsArray)) {
+            data.limbs.splice(i,1);
+            break;
+          }
+        }
       }
     }
   }

@@ -98,6 +98,7 @@ module.exports = {
     }  
 
     var bodyOrLimb = chooseOne('body','limb');
+    
     if(bodyOrLimb === 'body') {
       var property = chooseOne('mass','count','position');
       if(randomInt(1000) === 18) {
@@ -195,7 +196,18 @@ module.exports = {
           }
         }
         if(moreOrLess === 'less') {
-          //NEED TO MAKE SURE IT'S STILL CONNECTED
+          var partCount = data.bodyParts.length;
+          for(var i = 0; i < data.limbs.length; i++) {
+            var limbsCopy = JSON.parse(JSON.stringify(data.limbs));
+            limbsCopy.splice(i,1);
+            var connectionsArray = limbsCopy.map(function(limb) {
+              return limb.connections;
+            });
+            if(checkIfPartsIncluded(connectionsArray, partCount) && checkIfPartsConnected(connectionsArray)) {
+              data.limbs.splice(i,1);
+              break;
+            }
+          }
         }
       }
     }
@@ -259,27 +271,27 @@ function getJunctions(array) {
   return possibleConnections;
 };
 
-function checkIfPartsIncluded(connections, partCount) {
+function checkIfPartsIncluded(connectionsArray, partCount) {
   var nodes = {};
-  connections.forEach(function(conn) {
+  connectionsArray.forEach(function(conn) {
     nodes[conn[0]] = true;
     nodes[conn[1]] = true;
   });
   return Object.keys(nodes).length === partCount;
 };
 
-function checkIfPartsConnected(array) {
+function checkIfPartsConnected(connectionsArray) {
   var nodes = {};
   var setInc = 1;
-  for(var i = 0; i < array.length; i++) {
-    var conns = array[i];
-    var leastSet = Math.min(nodes[conns[0]] || Infinity, nodes[conns[1]] || Infinity);
+  for(var i = 0; i < connectionsArray.length; i++) {
+    var junction = connectionsArray[i];
+    var leastSet = Math.min(nodes[junction[0]] || Infinity, nodes[junction[1]] || Infinity);
     if(leastSet < Infinity) {
-      nodes[conns[0]] = leastSet;
-      nodes[conns[1]] = leastSet;
+      nodes[junction[0]] = leastSet;
+      nodes[junction[1]] = leastSet;
     } else {
-      nodes[conns[0]] = setInc;
-      nodes[conns[1]] = setInc;
+      nodes[junction[0]] = setInc;
+      nodes[junction[1]] = setInc;
       setInc++;
     }
   }

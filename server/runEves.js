@@ -25,7 +25,7 @@ var runEves = function(Eves, db) {
 
   setInterval(() => {
     collectStats(Eves);
-  }, 10000);
+  }, 2000);
 
   //setInterval(saveStateToDB, 10000)
   
