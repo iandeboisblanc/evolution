@@ -199,9 +199,6 @@ module.exports = {
         }
       }
     }
-    for(var i = 0; i < data.limbs.length; i++) {
-      //set lengths?
-    }
 
     data.stats.currentPos = getAvgPosition(data);
 

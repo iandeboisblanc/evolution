@@ -340,12 +340,8 @@ function deriveEveData(proto) {
       }
     }
   }
-  for(var i = 0; i < data.limbs.length; i++) {
-    //set lengths?
-  }
 
-  //need to set stats.currentPos
-  data.stats.currentPos = {x: data.bodyParts[0].pos.x, y: data.bodyParts[0].pos.y}
+  data.stats.currentPos = getAvgPosition(data);
   
   return data;
 }
