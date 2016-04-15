@@ -99,17 +99,11 @@ module.exports = {
 
     var bodyOrLimb = chooseOne('body','limb');
 
-    /******* For Testing ******/
-    bodyOrLimb = 'body';
-
     if(bodyOrLimb === 'body') {
       var property = chooseOne('mass','count','position');
       if(randomInt(1000) === 18) {
         property = 'color'; 
       }
-
-      /******* For Testing ******/
-      property = 'count';
 
       if(property === 'mass') {
         var bodyPart = chooseOne(data.bodyParts);
