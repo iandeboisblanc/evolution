@@ -181,8 +181,10 @@ module.exports = {
       var property = chooseOne('maxLength', 'count');
       if(property === 'maxLength') {
         var limb = chooseOne(data.limbs);
-        var plusOrMinus = chooseOne([-1,1]);
-        limb.maxLength = limb.maxLength + plusOrMinus * (randomInt(3) + 1); 
+        if(limb) {
+          var plusOrMinus = chooseOne([-1,1]);
+          limb.maxLength = limb.maxLength + plusOrMinus * (randomInt(3) + 1); 
+        }
       }
       if (property === 'count') {
         var moreOrLess = chooseOne('more', 'less');
