@@ -284,8 +284,24 @@ function deriveEveData(proto) {
         data.limbs.push(limb);
       }
       if(moreOrLess === 'less') {
-        //when removing, need to make sure it stays together
-        //need to reset indices of all others in connections
+        var randomIndex = randomInt(data.bodyParts.length - 1) + 1;
+        data.bodyParts.splice(randomIndex, 1);
+        var existingConnections = {};
+        for(var i = 0; i < data.limbs.length; i++) {
+          var connections = data.limbs[i].connections;
+          if(connections[0] >= randomIndex) {
+            connections[0] = connections[0] - 1;
+          }
+          if(connections[1] >= randomIndex) {
+            connections[1] = connections[1] - 1;
+          }
+          if(connections[0] === connections[1] || existingConnections[JSON.stringify(connections)]) {
+            data.limbs.splice(i,1);
+            i--;
+          } else {
+            existingConnections[JSON.stringify(connections)] = true;
+          }
+        }
       }
     }
     if(property === 'position') {
