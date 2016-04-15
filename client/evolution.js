@@ -234,6 +234,7 @@ function deriveEveData(proto) {
   for(var i = 1; i < data.bodyParts.length; i++) {
     data.bodyParts[i].pos.x = data.bodyParts[0].pos.x + data.bodyParts[i].initialRelativePos.x;
     data.bodyParts[i].pos.y = data.bodyParts[0].pos.y + data.bodyParts[i].initialRelativePos.y;
+    data.bodyParts[i].vel = {x:0, y:0};
   }
 
   //reset to initial body positions?  
