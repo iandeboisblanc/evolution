@@ -5,7 +5,7 @@ var canvas = {
   width: Math.max((window.innerWidth) - 10, 400), 
   height: Math.max((window.innerHeight) - 10, 400)
 };
-canvas.min = Math.min(canvas.width, canvas.height);
+canvas.max = Math.max(canvas.width, canvas.height);
 
 //INIT:
 // HTTPRequest.get('http://159.203.249.253/api/state', function(status, headers, content) {
@@ -82,7 +82,7 @@ function drawEve(data) {
       .append('circle')
       .attr('cx', bodyPart.pos.x * canvas.width/settings.width)
       .attr('cy', bodyPart.pos.y * canvas.height/settings.height)
-      .attr('r', bodyPart.mass * canvas.min/settings.min)
+      .attr('r', bodyPart.mass * canvas.max/settings.min)
       .attr('class', 'part')
       .style('fill', bodyPart.color)
       .attr('id', eveId + 'b' + (i));
