@@ -30,12 +30,12 @@ HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, con
 //FUNCTIONS:
 function renderBoard() {
   d3.select('body').selectAll('svg')
-    .data([{width:settings.width, height:settings.height}])
+    .data([{width:window.width, height:window.height}])
     .enter()
     .append('svg')
     .attr('class', 'board')
-    .attr('width', settings.width)
-    .attr('height', settings.height);
+    .attr('width', window.innerWidth)
+    .attr('height', window.innerHeight);
 }
 
 function renderEves() {

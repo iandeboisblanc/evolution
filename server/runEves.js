@@ -1,4 +1,4 @@
-import settings from './helpers/settings'
+import settings from './settings'
 import {findDistance, limitPositions, chooseOne, randomInt, getAvgPostion} from './helpers/general'
 import {applyLimbForces, updateBodyPartPositions} from './helpers/movement'
 import {createEveData, deriveEveData} from './helpers/eveCreation'
