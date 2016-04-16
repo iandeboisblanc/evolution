@@ -92,6 +92,7 @@ module.exports = {
     //reset to initial body positions?
     var newPos = {x:randomInt(settings.width - 40) + 20, y:randomInt(settings.height - 40) + 20} 
     data.bodyParts[0].pos = newPos;
+    data.bodyParts[0].vel = {x:0, y:0};
     for(var i = 1; i < data.bodyParts.length; i++) {
       data.bodyParts[i].pos.x = data.bodyParts[0].pos.x + data.bodyParts[i].initialRelativePos.x;
       data.bodyParts[i].pos.y = data.bodyParts[0].pos.y + data.bodyParts[i].initialRelativePos.y;

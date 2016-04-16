@@ -7,7 +7,7 @@ module.exports = {
     for(var i = 0; i < Eves.length; i++) {
       var eveSpeed = (Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth) || 0;
       var smallestSpeed = (Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.cyclesSinceBirth) || 0;
-      if(eveSpeed < smallestSpeed) {
+      if(eveSpeed < smallestSpeed && Eves[i].stats.cyclesSinceBirth > 5) {
         slowest = i;
       }
     }
