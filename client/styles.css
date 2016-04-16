@@ -3,6 +3,7 @@ body {
   font-family: 'Comfortaa', cursive;
   font-size: 14px;
   color: white;
+  margin: 0px;
 }
 
 .board {
@@ -10,10 +11,9 @@ body {
   background-color: rgb(255,60,60);
   border: 5px solid black;
   border-radius: 10px;
-  margin-left: 10px;
-  min-width: 100px;
+  min-width: 400px;
   /*width: 95vw;*/
-  min-height: 100px;
+  min-height: 400px;
   /*height: 95vh;*/
 }
 

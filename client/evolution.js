@@ -1,12 +1,18 @@
 //settings
 var settings = {}
 var Eves = [];
+var canvas = {
+  width: Math.max((window.innerWidth) - 10, 400), 
+  height: Math.max((window.innerHeight) - 10, 400)
+};
+canvas.min = Math.min(canvas.width, canvas.height);
 
 //INIT:
 // HTTPRequest.get('http://159.203.249.253/api/state', function(status, headers, content) {
 HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, content) {
   var body = JSON.parse(content);
   settings = body.settings;
+  settings.min = Math.min(settings.width, settings.height);
   Eves = body.Eves;
 
   renderBoard();
@@ -30,12 +36,12 @@ HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, con
 //FUNCTIONS:
 function renderBoard() {
   d3.select('body').selectAll('svg')
-    .data([{width:window.width, height:window.height}])
+    .data([{width:canvas.width, height:canvas.height}])
     .enter()
     .append('svg')
     .attr('class', 'board')
-    .attr('width', window.innerWidth)
-    .attr('height', window.innerHeight);
+    .attr('width', canvas.width)
+    .attr('height', canvas.height);
 }
 
 function renderEves() {
@@ -63,8 +69,8 @@ function drawEve(data) {
     var b1 = data.bodyParts[data.limbs[i].connections[1]];
     d3.select(eve)
       .append('line')
-      .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
-      .attr('x2', b1.pos.x).attr('y2', b1.pos.y)
+      .attr('x1', b0.pos.x * canvas.width/settings.width).attr('y1', b0.pos.y * canvas.height/settings.height)
+      .attr('x2', b1.pos.x * canvas.width/settings.width).attr('y2', b1.pos.y * canvas.height/settings.height)
       .attr('class', 'part')
       .attr('id', eveId + 'l' + i)
   }
@@ -74,8 +80,9 @@ function drawEve(data) {
     var bodyPart = data.bodyParts[i];
     d3.select(eve)
       .append('circle')
-      .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y)
-      .attr('r', bodyPart.mass)
+      .attr('cx', bodyPart.pos.x * canvas.width/settings.width)
+      .attr('cy', bodyPart.pos.y * canvas.height/settings.height)
+      .attr('r', bodyPart.mass * canvas.min/settings.min)
       .attr('class', 'part')
       .style('fill', bodyPart.color)
       .attr('id', eveId + 'b' + (i));
@@ -165,7 +172,8 @@ function updateBodyPartPositions() {
 
       //render new body part positions:
       d3.select('#eve' + eve.id + 'b' + j)
-        .attr('cx', bodyPart.pos.x).attr('cy', bodyPart.pos.y);
+        .attr('cx', bodyPart.pos.x * canvas.width/settings.width)
+        .attr('cy', bodyPart.pos.y * canvas.height/settings.height);
     }
 
     //render new limb positions:
@@ -173,8 +181,10 @@ function updateBodyPartPositions() {
       var b0 = eve.bodyParts[eve.limbs[k].connections[0]];
       var b1 = eve.bodyParts[eve.limbs[k].connections[1]];
       d3.select('#eve' + eve.id + 'l' + k)
-        .attr('x1', b0.pos.x).attr('y1', b0.pos.y)
-        .attr('x2', b1.pos.x).attr('y2', b1.pos.y);
+        .attr('x1', b0.pos.x * canvas.width/settings.width)
+        .attr('y1', b0.pos.y * canvas.height/settings.height)
+        .attr('x2', b1.pos.x * canvas.width/settings.width)
+        .attr('y2', b1.pos.y * canvas.height/settings.height);
     }
   }
 }
