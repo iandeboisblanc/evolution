@@ -12,9 +12,8 @@ body {
   border: 5px solid black;
   border-radius: 10px;
   min-width: 400px;
-  /*width: 95vw;*/
   min-height: 400px;
-  /*height: 95vh;*/
+  display: block;
 }
 
 circle {
