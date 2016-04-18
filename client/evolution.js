@@ -2,8 +2,8 @@
 var settings = {}
 var Eves = [];
 var canvas = {
-  width: Math.max((window.innerWidth) - 10, 400), 
-  height: Math.max((window.innerHeight) - 10, 400)
+  width: (window.innerWidth) - 10,
+  height: (window.innerHeight) - 10
 };
 canvas.max = Math.max(canvas.width, canvas.height);
 
@@ -42,6 +42,14 @@ function renderBoard() {
     .attr('class', 'board')
     .attr('width', canvas.width)
     .attr('height', canvas.height);
+  d3.select(window)
+    .on('resize', function() {
+      canvas.width = window.innerWidth - 10;
+      canvas.height = window.innerHeight - 10;
+      d3.select('svg')
+        .attr('width', canvas.width)
+        .attr('height', canvas.height);
+    });
 }
 
 function renderEves() {
@@ -58,11 +66,6 @@ function drawEve(data) {
   d3.select(eve)
     .attr('class','eve')
     .attr('id', eveId);
-  //if distance between starting x and wall are less than 50, 
-    //draw it on oneside, 
-  // else, 
-    //draw it on the other
-
   // Render limbs:
   for(var i = 0; i < data.limbs.length; i++) {
     var b0 = data.bodyParts[data.limbs[i].connections[0]];
@@ -74,7 +77,6 @@ function drawEve(data) {
       .attr('class', 'part')
       .attr('id', eveId + 'l' + i)
   }
-  
   // Render body parts:
   for(var i = 0; i < data.bodyParts.length; i ++) {
     var bodyPart = data.bodyParts[i];
