@@ -296,6 +296,27 @@ function deriveEveData(proto) {
           maxLength: length + randomInt(3),
         };
         data.limbs.push(limb);
+
+        //add additional limbs
+        var possibleLinks = [];
+        for(var i = 0; i < data.bodyParts.length - 1; i++) {
+          if(i !== index) { // index already included
+            possibleLinks.push(i);
+          }
+        }
+        var limbCount = randomInt(data.bodyParts.length - 2) //-2 b/c added new part and already have 1
+        for(var i = 0; i < limbCount; i++) {
+          var partIndex = chooseOne(possibleLinks);
+          var length = findDistance(data.bodyParts[partIndex].pos, data.bodyParts[newIndex].pos);
+          var limb = {
+            connections: [partIndex, newIndex],
+            currentLength: length,
+            growing: true,
+            initialLength: length,
+            maxLength: length + randomInt(3),
+          };
+          data.limbs.push(limb);
+        }
       }
       if(moreOrLess === 'less') {
         var randomIndex = randomInt(data.bodyParts.length - 1) + 1;
