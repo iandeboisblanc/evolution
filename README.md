@@ -160,4 +160,4 @@ Note that semicolons are required at the end of each query statement.
 
 Check out progress and upcoming developments:
 
-[![Stories in Ready](https://badge.waffle.io/iandeboisblanc/evolution.svg)](http://waffle.io/iandeboisblanc/evolution)
+[![Stories in Ready](https://badge.waffle.io/iandeboisblanc/evolution.svg?label=ready&title=Ready)(https://badge.waffle.io/iandeboisblanc/evolution.svg?label=ready&title=Ready)](http://waffle.io/iandeboisblanc/evolution)
