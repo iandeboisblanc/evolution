@@ -158,6 +158,6 @@ Note that semicolons are required at the end of each query statement.
 
 ## Future Development
 
-Check out progress and upcoming developments:
+Check out progress and upcoming developments on waffle.io:
 
-[![Stories in Backlog](https://badge.waffle.io/iandeboisblanc/evolution.svg?label=backlog&title=Backlog)![Stories in Ready](https://badge.waffle.io/iandeboisblanc/evolution.svg?label=ready&title=Ready)![Stories in Progress](https://badge.waffle.io/iandeboisblanc/evolution.svg?label=waffle%3Ain%20progress&title=In%20Progress)](http://waffle.io/iandeboisblanc/evolution)
+[![Stories in Ready](https://badge.waffle.io/iandeboisblanc/evolution.svg?label=ready&title=Ready)](http://waffle.io/iandeboisblanc/evolution)
