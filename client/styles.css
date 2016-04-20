@@ -26,14 +26,14 @@ line {
   z-index: -1;
 }
 
-.aboutContainer {
+.gitButtonContainer {
   position: absolute;
   bottom: 0;
   right: 0;
   z-index: 10;
 }
 
-.about {
+.gitButton {
   position:relative;
   right: 10px;
   bottom: 5px;
