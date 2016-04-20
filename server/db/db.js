@@ -28,6 +28,9 @@ var Eve = sequelize.define('eve', {
   limbs: {
     type: Sequelize.JSON
   },
+  distance_traveled: {
+    type: Sequelize.FLOAT
+  },
   killedAt: {
     type: Sequelize.DATE
   }
