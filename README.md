@@ -33,7 +33,7 @@ Create a file called 'config.json' within /server/db directory by copying 'confi
 
 Evolution is setup to be developed and run either locally, or on a local or deployed docker-machine. Depending on which method you use, you will need to update the HTTP request in client/evolution.js to ensure the client is asking for the eve data from the correct address.
 
-#### Docker
+### Run via Docker
 
 Docker provides a means of packaging applications and their relevant dependencies into blank Linux 'containers' to ensure consistency between development and production environments. Evolution requires two containers, one to host the Node server, and one to host the Postgres database. 
 
@@ -102,7 +102,7 @@ __Step 5: Deploy to Digital Ocean (optional)__
 
 Digital Ocean provides an easy way to deploy your Docker containers directly from your terminal. [Click here for instructions.](https://docs.docker.com/machine/drivers/digital-ocean/)
 
-#### Local
+### Run locally
 
 Instead of running the server within Docker containers, the server may also be run locally.
 
@@ -158,4 +158,6 @@ Note that semicolons are required at the end of each query statement.
 
 ## Future Development
 
-[![Stories in Ready](https://badge.waffle.io/iandeboisblanc/evolution.svg?label=ready&title=Ready)](http://waffle.io/iandeboisblanc/evolution)
+Check out progress and upcoming developments:
+
+[![Stories in Ready](https://badge.waffle.io/iandeboisblanc/evolution.svg)](http://waffle.io/iandeboisblanc/evolution)
