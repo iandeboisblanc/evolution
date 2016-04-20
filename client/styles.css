@@ -1,6 +1,5 @@
 body {
   background-color: #454545;
-  font-family: 'Comfortaa', cursive;
   font-size: 14px;
   color: white;
   margin: 0px;
@@ -25,6 +24,22 @@ line {
   stroke: black;
   stroke-width: 3px;
   z-index: -1;
+}
+
+.gitButtonContainer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.gitButton {
+  position:relative;
+  right: 10px;
+  bottom: 5px;
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
 }
 
 
