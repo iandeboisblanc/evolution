@@ -67,11 +67,21 @@ module.exports = {
     data.stats.currentPos = getAvgPosition(data);
 
     //write to db
+    var smallerBodyParts = JSON.parse(JSON.stringify(data.bodyParts));
+    smallerBodyParts.forEach((bodyPart) => {
+      delete bodyPart.pos;
+      delete bodyPart.vel;
+    });
+    var smallerLimbs = JSON.parse(JSON.stringify(data.limbs));
+    smallerLimbs.forEach((limb) => {
+      delete limb.currentLength;
+      delete limb.growing;
+    });
     db.Eve.create({
       parent_id: null,
       generation: 1,
-      body_parts: JSON.stringify(data.bodyParts),
-      limbs: JSON.stringify(data.limbs),
+      body_parts: JSON.stringify(smallerBodyParts),
+      limbs: JSON.stringify(smallerLimbs),
     })
     .then(function(eve) {
       data.id = eve.dataValues.id;
@@ -258,12 +268,21 @@ module.exports = {
     }
 
     data.stats.currentPos = getAvgPosition(data);
-
+    var smallerBodyParts = JSON.parse(JSON.stringify(data.bodyParts));
+    smallerBodyParts.forEach((bodyPart) => {
+      delete bodyPart.pos;
+      delete bodyPart.vel;
+    });
+    var smallerLimbs = JSON.parse(JSON.stringify(data.limbs));
+    smallerLimbs.forEach((limb) => {
+      delete limb.currentLength;
+      delete limb.growing;
+    });
     db.Eve.create({
       parent_id: proto.id,
       generation: data.stats.generation,
-      body_parts: JSON.stringify(data.bodyParts),
-      limbs: JSON.stringify(data.limbs),
+      body_parts: JSON.stringify(smallerBodyParts),
+      limbs: JSON.stringify(smallerLimbs),
     })
     .then(function(eve) {
       data.id = eve.dataValues.id;
