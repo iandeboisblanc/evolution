@@ -70,6 +70,8 @@ module.exports = {
     db.Eve.create({
       parent_id: null,
       generation: 1,
+      body_parts: JSON.stringify(data.bodyParts),
+      limbs: JSON.stringify(data.limbs),
     })
     .then(function(eve) {
       data.id = eve.dataValues.id;
@@ -260,6 +262,8 @@ module.exports = {
     db.Eve.create({
       parent_id: proto.id,
       generation: data.stats.generation,
+      body_parts: JSON.stringify(data.bodyParts),
+      limbs: JSON.stringify(data.limbs),
     })
     .then(function(eve) {
       data.id = eve.dataValues.id;

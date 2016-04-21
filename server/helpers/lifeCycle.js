@@ -13,6 +13,7 @@ module.exports = {
     }
     var eve = Eves.splice(slowest,1)[0];
     db.Eve.update({
+      distance_traveled: eve.stats.distanceTraveled,
       killedAt: new Date()
     }, {
       where: {id: eve.id}
