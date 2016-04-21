@@ -30,3 +30,9 @@ app.use(express.static(__dirname + '/../client'));
 app.get('/api/state', function(req, res) {
   res.status(200).send({Eves:Eves, settings:settings});
 });
+
+app.get('/api/eve/:id/ancestors', function(req, res) {
+  var eveId = req.params.id;
+  console.log('GOT REQUEST!', eveId);
+  res.status(200).send(eveId)
+})
