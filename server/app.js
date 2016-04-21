@@ -33,6 +33,15 @@ app.get('/api/state', function(req, res) {
 
 app.get('/api/eve/:id/ancestors', function(req, res) {
   var eveId = req.params.id;
-  console.log('GOT REQUEST!', eveId);
-  res.status(200).send(eveId)
-})
+  db.sequelize.query(
+    'SELECT * FROM eves a' +
+    ' JOIN eves b ON a.parent_id = b.id' +
+    ' WHERE a.id = ?',
+    {replacements: [eveId]}
+  ).then((data) => {
+    res.status(200).send(data[0]);
+  }).catch((err) => {
+    console.error('Error fetching ancestors:', err);
+    res.status(500).send(err);
+  });
+});
