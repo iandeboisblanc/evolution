@@ -43,12 +43,12 @@ sequelize.sync(
 );
 
 sequelize.query(
-  'CREATE OR REPLACE FUNCTION get_progenitor(integer) RETURNS integer AS $$' +
+  'CREATE OR REPLACE FUNCTION get_progenitor(integer, integer) RETURNS integer AS $$' +
     ' DECLARE' +
       ' generation INTEGER :=10;' +
       ' currentId INTEGER := $1;' +
     ' BEGIN' + 
-      ' WHILE generation > 1 LOOP' +
+      ' WHILE generation > $2 LOOP' +
         ' generation :=' +
           ' (SELECT b.generation FROM eves a' +
           ' JOIN eves b ON a.parent_id = b.id' +

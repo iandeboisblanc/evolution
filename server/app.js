@@ -47,11 +47,11 @@ app.get('/api/eve/:id/ancestors', function(req, res) {
 });
 
 app.get('/api/eve/:id/ancestors2', function(req, res) {
-  var eveId = req.params.id;
-  db.sequelize.query('SELECT get_progenitor(?)', {replacements: [eveId]}
+  var descendantId = req.params.id;
+  var generation = 1;
+  db.sequelize.query('SELECT get_progenitor(?, ?)', {replacements: [descendantId, generation]}
   ).then((data) => {
-    console.log('------------------------------DATA-----------------------------------',data);
-    res.status(200).send(data);
+    res.status(200).send(data[0][0]);
   }).catch((err) => {
     console.error('Error fetching ancestors:', err);
     res.status(500).send(err);
