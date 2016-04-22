@@ -42,6 +42,27 @@ sequelize.sync(
   {force:true}
 );
 
+sequelize.query(
+  'CREATE OR REPLACE FUNCTION get_progenitor(integer, integer) RETURNS integer AS $$' +
+    ' DECLARE' +
+      ' generation INTEGER :=10;' +
+      ' currentId INTEGER := $1;' +
+    ' BEGIN' + 
+      ' WHILE generation > $2 LOOP' +
+        ' generation :=' +
+          ' (SELECT b.generation FROM eves a' +
+          ' JOIN eves b ON a.parent_id = b.id' +
+          ' WHERE a.id = currentId);' +
+        ' currentId :=' +
+          ' (SELECT b.id FROM eves a' +
+          ' JOIN eves b ON a.parent_id = b.id' +
+          ' WHERE a.id = currentId);' +
+      ' END LOOP;' +
+    ' RETURN currentId;' +
+  ' END;' + 
+  ' $$ LANGUAGE plpgsql;'
+);
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 db.Eve = Eve;

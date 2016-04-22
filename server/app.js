@@ -30,3 +30,53 @@ app.use(express.static(__dirname + '/../client'));
 app.get('/api/state', function(req, res) {
   res.status(200).send({Eves:Eves, settings:settings});
 });
+
+app.get('/api/eve/:id/ancestors', function(req, res) {
+  var eveId = req.params.id;
+  db.sequelize.query(
+    'SELECT * FROM eves a' +
+    ' JOIN eves b ON a.parent_id = b.id' +
+    ' WHERE a.id = ?',
+    {replacements: [eveId]}
+  ).then((data) => {
+    res.status(200).send(data[0]);
+  }).catch((err) => {
+    console.error('Error fetching ancestors:', err);
+    res.status(500).send(err);
+  });
+});
+
+app.get('/api/eve/:id/ancestors2', function(req, res) {
+  var descendantId = req.params.id;
+  var generation = 1;
+  db.sequelize.query('SELECT get_progenitor(?, ?)', {replacements: [descendantId, generation]}
+  ).then((data) => {
+    res.status(200).send(data[0][0]);
+  }).catch((err) => {
+    console.error('Error fetching ancestors:', err);
+    res.status(500).send(err);
+  });
+});
+
+// db.sequelize.query(
+//   'DO $$' +
+//   ' DECLARE' +
+//     ' generation INTEGER;' +
+//     ' currentId INTEGER:=?;' +
+//   ' BEGIN' + 
+//     ' WHILE generation > 1 LOOP' +
+//       ' generation :=' +
+//         ' (SELECT b.generation FROM eves a' +
+//         ' JOIN eves b ON a.parent_id = b.id' +
+//         ' WHERE a.id = currentId)' +
+//       ' currentId :=' +
+//         ' (SELECT b.id FROM eves a' +
+//         ' JOIN eves b ON a.parent_id = b.id' +
+//         ' WHERE a.id = currentId)' +
+//     ' END LOOP;' +
+//   ' END $$;',
+//   {replacements: [eveId]}
+// )
+
+
+
