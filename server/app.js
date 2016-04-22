@@ -45,3 +45,38 @@ app.get('/api/eve/:id/ancestors', function(req, res) {
     res.status(500).send(err);
   });
 });
+
+app.get('/api/eve/:id/ancestors2', function(req, res) {
+  var eveId = req.params.id;
+  db.sequelize.query('SELECT get_progenitor(?)', {replacements: [eveId]}
+  ).then((data) => {
+    console.log('------------------------------DATA-----------------------------------',data);
+    res.status(200).send(data);
+  }).catch((err) => {
+    console.error('Error fetching ancestors:', err);
+    res.status(500).send(err);
+  });
+});
+
+// db.sequelize.query(
+//   'DO $$' +
+//   ' DECLARE' +
+//     ' generation INTEGER;' +
+//     ' currentId INTEGER:=?;' +
+//   ' BEGIN' + 
+//     ' WHILE generation > 1 LOOP' +
+//       ' generation :=' +
+//         ' (SELECT b.generation FROM eves a' +
+//         ' JOIN eves b ON a.parent_id = b.id' +
+//         ' WHERE a.id = currentId)' +
+//       ' currentId :=' +
+//         ' (SELECT b.id FROM eves a' +
+//         ' JOIN eves b ON a.parent_id = b.id' +
+//         ' WHERE a.id = currentId)' +
+//     ' END LOOP;' +
+//   ' END $$;',
+//   {replacements: [eveId]}
+// )
+
+
+
