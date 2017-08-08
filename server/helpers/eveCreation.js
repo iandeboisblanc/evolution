@@ -2,13 +2,12 @@ import settings from './../settings'
 import {findDistance, limitPositions, chooseOne, randomInt, getAvgPosition} from './general'
 
 module.exports = {
-  createEveData:(db) => {
+  createEveData:() => {
 
     var data = {};
     data.stats = {
       distanceTraveled: 0,
       cyclesSinceBirth: 0,
-      //stored in DB:
       generation: 1,
     }
 
@@ -19,7 +18,7 @@ module.exports = {
     data.limbs = [];
 
     var possibleConnections = getJunctions(data.bodyParts);
-    
+
     var allConnected = false;
     while(!allConnected && possibleConnections.length) {
       var randomIndex = randomInt(possibleConnections.length);
@@ -42,7 +41,7 @@ module.exports = {
         return limb.connections;
       });
 
-      allConnected = checkIfPartsIncluded(connections, data.bodyParts.length) 
+      allConnected = checkIfPartsIncluded(connections, data.bodyParts.length)
         && checkIfPartsConnected(connections);
     }
     var moreLimbs = randomInt(possibleConnections.length);
@@ -65,46 +64,35 @@ module.exports = {
       data.limbs.push(limb);
     }
     data.stats.currentPos = getAvgPosition(data);
+    data.id = Math.floor(Math.random() * 1000000);
 
-    //write to db
-    db.Eve.create({
-      parent_id: null,
-      generation: 1,
-    })
-    .then(function(eve) {
-      data.id = eve.dataValues.id;
-    })
-    .catch(function(err) {
-      console.error('Error saving eve data to db:', err);
-    })
     return data;
   },
 
-  deriveEveData: (proto, db) => {
+  deriveEveData: (proto) => {
     var data = JSON.parse(JSON.stringify(proto));
     data.stats = {
       distanceTraveled: 0,
       cyclesSinceBirth: 0,
-      //stored in DB:
       generation: proto.stats.generation + 1,
     };
-    
+
     //reset to initial body positions?
-    var newPos = {x:randomInt(settings.width - 40) + 20, y:randomInt(settings.height - 40) + 20} 
+    var newPos = {x:randomInt(settings.width - 40) + 20, y:randomInt(settings.height - 40) + 20}
     data.bodyParts[0].pos = newPos;
     data.bodyParts[0].vel = {x:0, y:0};
     for(var i = 1; i < data.bodyParts.length; i++) {
       data.bodyParts[i].pos.x = data.bodyParts[0].pos.x + data.bodyParts[i].initialRelativePos.x;
       data.bodyParts[i].pos.y = data.bodyParts[0].pos.y + data.bodyParts[i].initialRelativePos.y;
       data.bodyParts[i].vel = {x:0, y:0};
-    }  
+    }
 
     var bodyOrLimb = chooseOne('body','limb');
 
     if(bodyOrLimb === 'body') {
       var property = chooseOne('mass','count','position');
       if(randomInt(1000) === 18) {
-        property = 'color'; 
+        property = 'color';
       }
 
       if(property === 'mass') {
@@ -122,11 +110,11 @@ module.exports = {
           var bodyPart = {
             mass: randomInt(10) + 3,
             pos: {
-              x:linkedPart.pos.x + distance * Math.cos(angle), 
+              x:linkedPart.pos.x + distance * Math.cos(angle),
               y:linkedPart.pos.y + distance * Math.sin(angle)
             },
             initialRelativePos: {
-              x:linkedPart.initialRelativePos.x + distance * Math.cos(angle), 
+              x:linkedPart.initialRelativePos.x + distance * Math.cos(angle),
               y:linkedPart.initialRelativePos.x + distance * Math.cos(angle),
             },
             vel: {x:0, y:0},
@@ -134,7 +122,7 @@ module.exports = {
           };
           var newIndex = data.bodyParts.length;
           data.bodyParts.push(bodyPart);
-          
+
           //add initial limb
           var length = findDistance(data.bodyParts[index].pos, data.bodyParts[newIndex].pos);
           var limb = {
@@ -206,7 +194,7 @@ module.exports = {
         var limb = chooseOne(data.limbs);
         if(limb) {
           var plusOrMinus = chooseOne([-1,1]);
-          limb.maxLength = limb.maxLength + plusOrMinus * (randomInt(3) + 1); 
+          limb.maxLength = limb.maxLength + plusOrMinus * (randomInt(3) + 1);
         }
       }
       if (property === 'count') {
@@ -256,17 +244,8 @@ module.exports = {
     }
 
     data.stats.currentPos = getAvgPosition(data);
+    data.id = Math.floor(Math.random() * 1000000);
 
-    db.Eve.create({
-      parent_id: proto.id,
-      generation: data.stats.generation,
-    })
-    .then(function(eve) {
-      data.id = eve.dataValues.id;
-    })
-    .catch(function(err) {
-      console.error('Error saving eve data to db:', err);
-    })
     return data;
   }
 }
@@ -345,5 +324,3 @@ function checkIfPartsConnected(connectionsArray) {
   }
   return true;
 };
-
-

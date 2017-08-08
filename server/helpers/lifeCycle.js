@@ -1,8 +1,8 @@
-import {findDistance, limitPositions, chooseOne, randomInt, getAvgPosition} from './general'
+import { findDistance, limitPositions, chooseOne, randomInt, getAvgPosition } from './general'
 
 module.exports = {
 
-  killEve: (Eves, db) => {
+  killEve: (Eves) => {
     var slowest = 0;
     for(var i = 0; i < Eves.length; i++) {
       var eveSpeed = (Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth) || 0;
@@ -12,14 +12,6 @@ module.exports = {
       }
     }
     var eve = Eves.splice(slowest,1)[0];
-    db.Eve.update({
-      killedAt: new Date()
-    }, {
-      where: {id: eve.id}
-    })
-    .catch((err) => {
-      console.error('Error setting killed date:', err);
-    });
   },
 
   collectStats: (Eves) => {
@@ -31,9 +23,5 @@ module.exports = {
       eve.stats.cyclesSinceBirth += 1;
       eve.stats.currentPos = pos;
     }
-  },
-
-  saveStateToDB: (Eves) => {
-
   }
 }
