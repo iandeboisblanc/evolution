@@ -8,8 +8,8 @@ var canvas = {
 canvas.max = Math.max(canvas.width, canvas.height);
 
 //INIT:
-// HTTPRequest.get('http://159.203.249.253/api/state', function(status, headers, content) {
-HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, content) {
+HTTPRequest.get('http://www.iandeboisblanc.com/api/state', function(status, headers, content) {
+// HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, content) {
   var body = JSON.parse(content);
   settings = body.settings;
   settings.min = Math.min(settings.width, settings.height);
@@ -22,8 +22,8 @@ HTTPRequest.get('http://localhost:3000/api/state', function(status, headers, con
     applyLimbForces();
     updateBodyPartPositions();
   }, settings.stepTime);
-  
-  
+
+
   setInterval(function() {
     killEves();
     Eves.push(deriveEveData(chooseOne(Eves)));
@@ -161,7 +161,7 @@ function updateBodyPartPositions() {
       //set new positions:
       bodyPart.pos.x += bodyPart.vel.x;
       bodyPart.pos.y += bodyPart.vel.y;
-      
+
       //redirect if hitting edge of screen:
       if(bodyPart.pos.x <= bodyPart.mass || bodyPart.pos.x >= settings.width - bodyPart.mass) {
         bodyPart.pos.x = limitPositions(bodyPart.pos.x, 1, bodyPart.mass)[0];
@@ -223,7 +223,7 @@ function killEves() {
   //     },100)
   //   }
   // }
-  
+
   // removePiece(partsToRemove);
     // .remove();
   // would be great if i could remove a piece at a time
@@ -241,7 +241,7 @@ function deriveEveData(proto) {
     ancestors: ancestors
   };
 
-  var newPos = {x:randomInt(settings.width - 40) + 20, y:randomInt(settings.height - 40) + 20} 
+  var newPos = {x:randomInt(settings.width - 40) + 20, y:randomInt(settings.height - 40) + 20}
   data.bodyParts[0].pos = newPos;
   data.bodyParts[0].vel = {x:0, y:0};
   for(var i = 1; i < data.bodyParts.length; i++) {
@@ -250,7 +250,7 @@ function deriveEveData(proto) {
     data.bodyParts[i].vel = {x:0, y:0};
   }
 
-  //reset to initial body positions?  
+  //reset to initial body positions?
 
   var bodyOrLimb = chooseOne('body','limb');
   if(bodyOrLimb === 'body') {
@@ -273,11 +273,11 @@ function deriveEveData(proto) {
         var bodyPart = {
           mass: randomInt(10) + 3,
           pos: {
-            x:linkedPart.pos.x + distance * Math.cos(angle), 
+            x:linkedPart.pos.x + distance * Math.cos(angle),
             y:linkedPart.pos.y + distance * Math.sin(angle)
           },
           initialRelativePos: {
-            x:linkedPart.initialRelativePos.x + distance * Math.cos(angle), 
+            x:linkedPart.initialRelativePos.x + distance * Math.cos(angle),
             y:linkedPart.initialRelativePos.x + distance * Math.cos(angle),
           },
           vel: {x:0, y:0},
@@ -285,7 +285,7 @@ function deriveEveData(proto) {
         };
         var newIndex = data.bodyParts.length;
         data.bodyParts.push(bodyPart);
-        
+
         //add limb
         var length = findDistance(data.bodyParts[index].pos, data.bodyParts[newIndex].pos);
         var limb = {
@@ -357,7 +357,7 @@ function deriveEveData(proto) {
       var limb = chooseOne(data.limbs);
       if(limb) {
         var plusOrMinus = chooseOne([-1,1]);
-        limb.maxLength = limb.maxLength + plusOrMinus * (randomInt(3) + 1); 
+        limb.maxLength = limb.maxLength + plusOrMinus * (randomInt(3) + 1);
       }
     }
     if (property === 'count') {
