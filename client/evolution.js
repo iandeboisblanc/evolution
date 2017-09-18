@@ -192,16 +192,18 @@ function updateBodyPartPositions() {
 }
 
 function killEves() {
-  var slowest = 0;
+  var loserIndex = 0;
+  var worstScore;
   for(var i = 0; i < Eves.length; i++) {
     var eveSpeed = (Eves[i].stats.distanceTraveled / Eves[i].stats.cyclesSinceBirth) || 0;
-    var smallestSpeed = (Eves[slowest].stats.distanceTraveled / Eves[slowest].stats.cyclesSinceBirth) || 0;
-    if(eveSpeed < smallestSpeed && Eves[i].stats.cyclesSinceBirth > 5) {
-      slowest = i;
+    var score = eveSpeed * Math.pow(Eves[i].bodyParts.length, 0.75);
+    if (!worstScore || score < worstScore) {
+      loserIndex = i;
+      worstScore = score;
     }
   }
 
-  Eves.splice(slowest,1);
+  Eves.splice(loserIndex,1);
 
   //Remove from board
   var elementsToRemove = [];
